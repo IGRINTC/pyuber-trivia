@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trivia Games</title>
+<style>
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #e2e8f0;
+  }
+  .container {
+    text-align: center;
+  }
+  h1 {
+    color: #38bdf8;
+  }
+  .links {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 24px;
+  }
+  a.game-link {
+    padding: 16px 32px;
+    border-radius: 10px;
+    background: #1e293b;
+    border: 2px solid #334155;
+    color: #e2e8f0;
+    text-decoration: none;
+    font-size: 1.2rem;
+    transition: border-color 0.2s;
+  }
+  a.game-link:hover {
+    border-color: #38bdf8;
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎮 Trivia Games</h1>
+    <div class="links">
+      <a class="game-link" href="geography_quiz.html">🌍 Geography Quiz</a>
+      <a class="game-link" href="hamilton_quiz.html">🎭 Hamilton Trivia</a>
+    </div>
+  </div>
+</body>
+</html>
