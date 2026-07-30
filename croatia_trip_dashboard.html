@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Croatia Trip Dashboard</title>
+<style>
+  :root {
+    --bg: #071c3f;
+    --bg2: #0b2a5c;
+    --card: #0f2f66;
+    --card-alt: #123772;
+    --accent: #e63946;
+    --accent2: #2ec4b6;
+    --gold: #f4b942;
+    --text: #eaf2ff;
+    --muted: #9fb3d1;
+    --border: rgba(255,255,255,0.1);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: linear-gradient(160deg, var(--bg), var(--bg2) 60%, #08213f);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--text);
+  }
+  header {
+    padding: 28px 20px 18px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(45deg, rgba(230,57,70,0.08) 0 10px, transparent 10px 20px);
+    pointer-events: none;
+  }
+  h1 {
+    margin: 0 0 6px;
+    font-size: 2rem;
+    letter-spacing: 0.5px;
+  }
+  header p.sub {
+    margin: 0;
+    color: var(--muted);
+    font-size: 1rem;
+  }
+  #countdown {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 18px;
+    flex-wrap: wrap;
+  }
+  .cd-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 16px;
+    min-width: 70px;
+  }
+  .cd-box .num { font-size: 1.6rem; font-weight: 700; color: var(--gold); }
+  .cd-box .label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+
+  nav.tabs {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 16px 0;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  nav.tabs button {
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 18px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  nav.tabs button:hover { border-color: var(--accent2); }
+  nav.tabs button.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    font-weight: 600;
+  }
+
+  main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 20px 16px 60px;
+  }
+  .panel { display: none; animation: fade 0.25s ease; }
+  .panel.active { display: block; }
+  @keyframes fade { from { opacity: 0; transform: translateY(4px);} to {opacity:1; transform:translateY(0);} }
+
+  h2.section-title {
+    color: var(--gold);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px;
+    margin-top: 0;
+  }
+
+  /* Overview */
+  .route-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    margin: 16px 0;
+  }
+  .route-chip {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+  }
+  .route-arrow { color: var(--accent2); font-weight: bold; }
+  .overview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+    margin-top: 16px;
+  }
+  .info-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+  }
+  .info-card h3 { margin: 0 0 8px; color: var(--accent2); font-size: 1rem; }
+  .info-card p { margin: 4px 0; color: var(--muted); font-size: 0.9rem; }
+
+  /* Itinerary */
+  .day-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 16px;
+  }
+  .day-card .day-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .day-card .day-head h3 { margin: 0; color: var(--gold); }
+  .day-card .day-head span.date { color: var(--muted); font-size: 0.85rem; }
+  .task-list { list-style: none; margin: 0; padding: 0; }
+  .task-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 6px 0;
+    border-bottom: 1px dashed var(--border);
+    font-size: 0.95rem;
+  }
+  .task-list li:last-child { border-bottom: none; }
+  .task-list input[type=checkbox] { margin-top: 3px; accent-color: var(--accent2); width: 16px; height: 16px; }
+  .task-list li.checked span.txt { text-decoration: line-through; color: var(--muted); }
+  .map-links { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .map-links a {
+    font-size: 0.8rem;
+    color: var(--accent2);
+    text-decoration: none;
+    border: 1px solid var(--accent2);
+    padding: 4px 10px;
+    border-radius: 999px;
+  }
+  .map-links a:hover { background: var(--accent2); color: #04202a; }
+
+  .progress-wrap {
+    background: var(--card-alt);
+    border-radius: 999px;
+    height: 10px;
+    overflow: hidden;
+    margin: 10px 0 18px;
+    border: 1px solid var(--border);
+  }
+  .progress-bar { height: 100%; background: linear-gradient(90deg, var(--accent2), var(--gold)); width: 0%; transition: width 0.3s; }
+  .progress-label { font-size: 0.85rem; color: var(--muted); margin-bottom: 4px; }
+
+  /* Packing */
+  .pack-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+  }
+  .pack-cat {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+  }
+  .pack-cat h3 { margin: 0 0 8px; color: var(--accent2); font-size: 1rem; }
+
+  /* Budget */
+  .budget-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+    background: var(--card);
+    padding: 14px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+  }
+  .budget-form input, .budget-form select {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+  }
+  .budget-form input[type=text] { flex: 1; min-width: 140px; }
+  .budget-form input[type=number] { width: 110px; }
+  .budget-form button, .btn {
+    background: var(--accent);
+    border: none;
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+  }
+  .budget-form button:hover, .btn:hover { opacity: 0.9; }
+  table.budget-table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
+  table.budget-table th, table.budget-table td {
+    text-align: left;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.9rem;
+  }
+  table.budget-table th { color: var(--muted); font-weight: 500; }
+  .del-btn { background: transparent; border: 1px solid var(--accent); color: var(--accent); border-radius: 6px; cursor: pointer; padding: 3px 8px; font-size: 0.8rem; }
+  .budget-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .budget-summary .card {
+    background: var(--card-alt);
+    border-radius: 10px;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+  }
+  .budget-summary .card .amt { font-size: 1.3rem; font-weight: 700; color: var(--gold); }
+  .budget-summary .card .lbl { font-size: 0.8rem; color: var(--muted); }
+  .budget-goal { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+
+  /* Phrases */
+  table.phrase-table { width: 100%; border-collapse: collapse; }
+  table.phrase-table th, table.phrase-table td {
+    padding: 9px 10px;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.92rem;
+    text-align: left;
+  }
+  table.phrase-table th { color: var(--accent2); }
+
+  /* Food */
+  .food-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+  }
+  .food-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+  }
+  .food-card h3 { margin: 0 0 6px; color: var(--gold); }
+  .food-card ul { margin: 6px 0 0; padding-left: 18px; color: var(--muted); font-size: 0.9rem; }
+  .food-card .try { color: var(--text); }
+  .note { font-size: 0.8rem; color: var(--muted); margin-top: 10px; }
+
+  footer { text-align: center; padding: 20px; color: var(--muted); font-size: 0.8rem; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🇭🇷 Croatia Adventure</h1>
+  <p class="sub">September 8 – 16, 2026 &nbsp;|&nbsp; Zagreb → Plitvice → Zadar → Split → Hvar → Dubrovnik</p>
+  <div id="countdown">
+    <div class="cd-box"><div class="num" id="cd-days">--</div><div class="label">Days</div></div>
+    <div class="cd-box"><div class="num" id="cd-hours">--</div><div class="label">Hours</div></div>
+    <div class="cd-box"><div class="num" id="cd-mins">--</div><div class="label">Mins</div></div>
+    <div class="cd-box"><div class="num" id="cd-secs">--</div><div class="label">Secs</div></div>
+  </div>
+</header>
+
+<nav class="tabs">
+  <button data-panel="overview" class="active">Overview</button>
+  <button data-panel="itinerary">Itinerary</button>
+  <button data-panel="packing">Packing</button>
+  <button data-panel="budget">Budget</button>
+  <button data-panel="phrases">Phrases</button>
+  <button data-panel="food">Food & Drink</button>
+</nav>
+
+<main>
+
+  <!-- OVERVIEW -->
+  <section id="overview" class="panel active">
+    <h2 class="section-title">Trip Overview</h2>
+    <div class="route-strip">
+      <span class="route-chip">🏙️ Zagreb</span><span class="route-arrow">→</span>
+      <span class="route-chip">💧 Plitvice Lakes</span><span class="route-arrow">→</span>
+      <span class="route-chip">🌅 Zadar</span><span class="route-arrow">→</span>
+      <span class="route-chip">🏛️ Split</span><span class="route-arrow">→</span>
+      <span class="route-chip">🏝️ Hvar</span><span class="route-arrow">→</span>
+      <span class="route-chip">🏰 Dubrovnik</span>
+    </div>
+    <div class="overview-grid">
+      <div class="info-card">
+        <h3>✈️ Flights</h3>
+        <p>Arrival: Sep 8, Zagreb (ZAG)</p>
+        <p>Departure: Sep 16, ~23:59 (midnight) from Dubrovnik (DBV)</p>
+      </div>
+      <div class="info-card">
+        <h3>📅 Duration</h3>
+        <p>9 days / 8 nights</p>
+        <p>Classic Croatia coastal route, north to south</p>
+      </div>
+      <div class="info-card">
+        <h3>🌤️ September Weather</h3>
+        <p>Warm sea (~23-24°C), sunny days ~26-28°C</p>
+        <p>Fewer crowds than peak summer, pack a light layer for evenings</p>
+      </div>
+      <div class="info-card">
+        <h3>🚗 Getting Around</h3>
+        <p>Rental car: Zagreb → Split (drop off before islands)</p>
+        <p>Ferries/catamarans: Split ↔ Hvar ↔ Dubrovnik</p>
+      </div>
+      <div class="info-card">
+        <h3>💶 Currency</h3>
+        <p>Euro (EUR) — Croatia adopted the euro in 2023</p>
+        <p>Cards widely accepted; carry some cash for small konobas & markets</p>
+      </div>
+      <div class="info-card">
+        <h3>🔌 Practical</h3>
+        <p>Plug type C/F (EU standard, 230V)</p>
+        <p>EU country — check current entry/visa requirements before travel</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ITINERARY -->
+  <section id="itinerary" class="panel">
+    <h2 class="section-title">Day-by-Day Itinerary</h2>
+    <div class="progress-label">Trip progress: <span id="itin-progress-text">0 / 0</span> tasks done</div>
+    <div class="progress-wrap"><div class="progress-bar" id="itin-progress-bar"></div></div>
+    <div id="itinerary-days"></div>
+  </section>
+
+  <!-- PACKING -->
+  <section id="packing" class="panel">
+    <h2 class="section-title">Packing Checklist</h2>
+    <div class="progress-label">Packed: <span id="pack-progress-text">0 / 0</span></div>
+    <div class="progress-wrap"><div class="progress-bar" id="pack-progress-bar"></div></div>
+    <div class="pack-grid" id="pack-grid"></div>
+  </section>
+
+  <!-- BUDGET -->
+  <section id="budget" class="panel">
+    <h2 class="section-title">Budget Tracker</h2>
+    <div class="budget-goal">
+      <label for="budget-goal-input">Total trip budget (€):</label>
+      <input type="number" id="budget-goal-input" min="0" step="10" placeholder="e.g. 2000">
+    </div>
+    <div class="budget-summary">
+      <div class="card"><div class="amt" id="sum-spent">€0</div><div class="lbl">Total spent</div></div>
+      <div class="card"><div class="amt" id="sum-remaining">€0</div><div class="lbl">Remaining</div></div>
+      <div class="card"><div class="amt" id="sum-count">0</div><div class="lbl">Expenses logged</div></div>
+    </div>
+    <form class="budget-form" id="budget-form">
+      <input type="text" id="exp-desc" placeholder="Description (e.g. Hotel Zagreb)" required>
+      <select id="exp-cat">
+        <option>Accommodation</option>
+        <option>Food & Drink</option>
+        <option>Transport</option>
+        <option>Activities</option>
+        <option>Shopping</option>
+        <option>Misc</option>
+      </select>
+      <input type="number" id="exp-amount" placeholder="Amount €" min="0" step="0.01" required>
+      <button type="submit">Add Expense</button>
+    </form>
+    <table class="budget-table" id="budget-table">
+      <thead><tr><th>Description</th><th>Category</th><th>Amount</th><th></th></tr></thead>
+      <tbody id="budget-body"></tbody>
+    </table>
+  </section>
+
+  <!-- PHRASES -->
+  <section id="phrases" class="panel">
+    <h2 class="section-title">Key Croatian Phrases</h2>
+    <table class="phrase-table">
+      <thead><tr><th>English</th><th>Croatian</th><th>Pronunciation</th></tr></thead>
+      <tbody id="phrase-body"></tbody>
+    </table>
+  </section>
+
+  <!-- FOOD -->
+  <section id="food" class="panel">
+    <h2 class="section-title">Food & Drink Guide</h2>
+    <div class="food-grid" id="food-grid"></div>
+    <p class="note">Recommendations are general dish/style guides — verify specific restaurant hours, reservations, and current reviews before visiting.</p>
+  </section>
+
+</main>
+
+<footer>Made for the September 2026 Croatia trip · Data is stored locally in your browser (nothing is uploaded anywhere)</footer>
+
+<script>
+  // ---------- Tabs ----------
+  const tabButtons = document.querySelectorAll('nav.tabs button');
+  const panels = document.querySelectorAll('.panel');
+  tabButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tabButtons.forEach(b => b.classList.remove('active'));
+      panels.forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.panel).classList.add('active');
+    });
+  });
+
+  // ---------- Countdown ----------
+  const tripStart = new Date('2026-09-08T00:00:00');
+  function updateCountdown() {
+    const now = new Date();
+    let diff = tripStart - now;
+    if (diff < 0) diff = 0;
+    const days = Math.floor(diff / (1000*60*60*24));
+    const hours = Math.floor((diff / (1000*60*60)) % 24);
+    const mins = Math.floor((diff / (1000*60)) % 60);
+    const secs = Math.floor((diff / 1000) % 60);
+    document.getElementById('cd-days').textContent = days;
+    document.getElementById('cd-hours').textContent = String(hours).padStart(2,'0');
+    document.getElementById('cd-mins').textContent = String(mins).padStart(2,'0');
+    document.getElementById('cd-secs').textContent = String(secs).padStart(2,'0');
+  }
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+
+  // ---------- Helpers ----------
+  function mapLink(query) {
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+  }
+  function loadState(key) {
+    try { return JSON.parse(localStorage.getItem(key)) || {}; } catch(e) { return {}; }
+  }
+  function saveState(key, obj) {
+    localStorage.setItem(key, JSON.stringify(obj));
+  }
+
+  // ---------- Itinerary Data ----------
+  const itinerary = [
+    { date: 'Tue, Sep 8', title: 'Arrive in Zagreb', tasks: [
+        'Land at Zagreb Airport & transfer to hotel',
+        'Check in and freshen up',
+        'Stroll Ban Jelačić Square',
+        'Explore Upper Town (Gornji Grad) & St. Mark\'s Church',
+        'Ride the Lotrščak Tower / hear the noon cannon (if timing allows)',
+        'Browse Dolac Market',
+        'Dinner on Tkalčićeva Street'
+      ], maps: ['Ban Jelačić Square Zagreb', "St. Mark's Church Zagreb", 'Dolac Market Zagreb'] },
+    { date: 'Wed, Sep 9', title: 'Zagreb → Plitvice Lakes National Park', tasks: [
+        'Morning: Zagreb Cathedral or Museum of Broken Relationships',
+        'Pick up rental car',
+        'Drive to Plitvice Lakes (~2 hrs)',
+        'Check in near the park',
+        'Afternoon walk of the Lower Lakes (Entrance 1)',
+        'Catch sunset at a viewpoint'
+      ], maps: ['Zagreb Cathedral', 'Plitvice Lakes National Park Entrance 1'] },
+    { date: 'Thu, Sep 10', title: 'Plitvice Lakes → Zadar', tasks: [
+        'Morning: hike Upper Lakes + boat/panoramic train ride',
+        'Drive to Zadar (~1.5 hrs)',
+        'Check into hotel',
+        'Sunset at the Sea Organ & Greeting to the Sun',
+        'Dinner in Zadar Old Town'
+      ], maps: ['Plitvice Lakes Upper Lakes', 'Sea Organ Zadar', 'Zadar Old Town'] },
+    { date: 'Fri, Sep 11', title: 'Zadar → Split', tasks: [
+        'Morning: Zadar Roman Forum & St. Donatus Church',
+        'Optional detour: Krka National Park waterfalls',
+        'Drive to Split (~2.5-3 hrs with stop)',
+        'Evening: Diocletian\'s Palace & Riva promenade'
+      ], maps: ["St. Donatus Church Zadar", 'Krka National Park', "Diocletian's Palace Split"] },
+    { date: 'Sat, Sep 12', title: 'Split', tasks: [
+        'Explore Diocletian\'s Palace in depth',
+        'Climb St. Domnius Cathedral bell tower',
+        'Hike Marjan Hill for the viewpoint',
+        'Beach time at Bačvice',
+        'Dinner along the Riva'
+      ], maps: ['Cathedral of St Domnius Split', 'Marjan Hill Split', 'Bačvice Beach Split'] },
+    { date: 'Sun, Sep 13', title: 'Split → Hvar', tasks: [
+        'Return rental car / morning ferry to Hvar Town (~1 hr)',
+        'Check in',
+        'Explore Hvar Old Town & St. Stephen\'s Square',
+        'Climb up to Fortica Fortress for sunset views'
+      ], maps: ['Hvar Town ferry port', "St Stephen's Square Hvar", 'Fortica Fortress Hvar'] },
+    { date: 'Mon, Sep 14', title: 'Hvar Island', tasks: [
+        'Boat trip to the Pakleni Islands',
+        'Swim & beach hop between coves',
+        'Evening cocktails & nightlife in Hvar Town'
+      ], maps: ['Pakleni Islands', 'Hvar Town'] },
+    { date: 'Tue, Sep 15', title: 'Hvar → Dubrovnik', tasks: [
+        'Morning catamaran/ferry to Dubrovnik',
+        'Check in',
+        'Walk the Dubrovnik City Walls',
+        'Sunset drink at Buža Bar'
+      ], maps: ['Dubrovnik ferry port', 'Dubrovnik City Walls', 'Buža Bar Dubrovnik'] },
+    { date: 'Wed, Sep 16', title: 'Dubrovnik — departure at midnight', tasks: [
+        'Explore Old Town, Rector\'s Palace & Franciscan Monastery',
+        'Cable car up to Mt. Srđ for panoramic views',
+        'Optional boat trip to Lokrum Island',
+        'Late dinner near the Old Harbor',
+        'Head to Dubrovnik Airport for the midnight flight'
+      ], maps: ["Rector's Palace Dubrovnik", 'Dubrovnik Cable Car', 'Lokrum Island', 'Dubrovnik Airport'] }
+  ];
+
+  const itinDaysEl = document.getElementById('itinerary-days');
+  const itinState = loadState('croatia_itin_tasks');
+
+  itinerary.forEach((day, dIdx) => {
+    const card = document.createElement('div');
+    card.className = 'day-card';
+    const taskItems = day.tasks.map((t, tIdx) => {
+      const id = `d${dIdx}-t${tIdx}`;
+      const checked = !!itinState[id];
+      return `<li class="${checked ? 'checked' : ''}">
+        <input type="checkbox" data-id="${id}" ${checked ? 'checked' : ''}>
+        <span class="txt">${t}</span>
+      </li>`;
+    }).join('');
+    const mapItems = (day.maps || []).map(m => `<a href="${mapLink(m + ', Croatia')}" target="_blank" rel="noopener">📍 ${m}</a>`).join('');
+    card.innerHTML = `
+      <div class="day-head">
+        <h3>Day ${dIdx + 1}: ${day.title}</h3>
+        <span class="date">${day.date}</span>
+      </div>
+      <ul class="task-list">${taskItems}</ul>
+      <div class="map-links">${mapItems}</div>
+    `;
+    itinDaysEl.appendChild(card);
+  });
+
+  function updateItinProgress() {
+    const boxes = document.querySelectorAll('#itinerary-days input[type=checkbox]');
+    const total = boxes.length;
+    const done = document.querySelectorAll('#itinerary-days input[type=checkbox]:checked').length;
+    document.getElementById('itin-progress-text').textContent = `${done} / ${total}`;
+    document.getElementById('itin-progress-bar').style.width = total ? `${(done/total)*100}%` : '0%';
+  }
+
+  itinDaysEl.addEventListener('change', (e) => {
+    if (e.target.matches('input[type=checkbox]')) {
+      const id = e.target.dataset.id;
+      itinState[id] = e.target.checked;
+      saveState('croatia_itin_tasks', itinState);
+      e.target.closest('li').classList.toggle('checked', e.target.checked);
+      updateItinProgress();
+    }
+  });
+  updateItinProgress();
+
+  // ---------- Packing ----------
+  const packingData = {
+    'Documents': ['Passport (valid 6+ months)', 'Flight tickets / boarding passes', 'Hotel & ferry confirmations', 'Travel insurance details', 'Driver\'s license / IDP for car rental', 'Credit/debit cards + some cash (EUR)'],
+    'Clothing': ['Swimsuits (x2)', 'Light summer clothes', 'Comfortable walking shoes', 'Sandals/flip-flops', 'Light layer/jacket for evenings', 'Sun hat & sunglasses'],
+    'Toiletries & Health': ['Sunscreen (high SPF)', 'After-sun lotion', 'Toiletry kit', 'Any personal medication', 'Basic first-aid items', 'Insect repellent'],
+    'Electronics': ['Phone + charger', 'EU plug adapter (type C/F)', 'Power bank', 'Camera', 'Headphones'],
+    'Beach/Boat Days': ['Beach towel', 'Waterproof phone pouch', 'Snorkel gear (optional)', 'Dry bag for boat trips', 'Water shoes for rocky beaches'],
+    'Misc': ['Reusable water bottle', 'Day backpack', 'Portable luggage scale', 'Copies of key documents (digital + paper)', 'Offline maps downloaded']
+  };
+
+  const packGrid = document.getElementById('pack-grid');
+  const packState = loadState('croatia_packing');
+  let packIdCounter = 0;
+
+  Object.entries(packingData).forEach(([cat, items]) => {
+    const catDiv = document.createElement('div');
+    catDiv.className = 'pack-cat';
+    const itemsHtml = items.map(item => {
+      const id = `pack-${packIdCounter++}`;
+      const checked = !!packState[id];
+      return `<li class="${checked ? 'checked' : ''}">
+        <input type="checkbox" data-id="${id}" ${checked ? 'checked' : ''}>
+        <span class="txt">${item}</span>
+      </li>`;
+    }).join('');
+    catDiv.innerHTML = `<h3>${cat}</h3><ul class="task-list">${itemsHtml}</ul>`;
+    packGrid.appendChild(catDiv);
+  });
+
+  function updatePackProgress() {
+    const boxes = document.querySelectorAll('#pack-grid input[type=checkbox]');
+    const total = boxes.length;
+    const done = document.querySelectorAll('#pack-grid input[type=checkbox]:checked').length;
+    document.getElementById('pack-progress-text').textContent = `${done} / ${total}`;
+    document.getElementById('pack-progress-bar').style.width = total ? `${(done/total)*100}%` : '0%';
+  }
+
+  packGrid.addEventListener('change', (e) => {
+    if (e.target.matches('input[type=checkbox]')) {
+      const id = e.target.dataset.id;
+      packState[id] = e.target.checked;
+      saveState('croatia_packing', packState);
+      e.target.closest('li').classList.toggle('checked', e.target.checked);
+      updatePackProgress();
+    }
+  });
+  updatePackProgress();
+
+  // ---------- Budget ----------
+  let expenses = loadState('croatia_budget_expenses');
+  if (Array.isArray(expenses) === false) expenses = [];
+  const budgetGoalInput = document.getElementById('budget-goal-input');
+  budgetGoalInput.value = localStorage.getItem('croatia_budget_goal') || '';
+
+  budgetGoalInput.addEventListener('input', () => {
+    localStorage.setItem('croatia_budget_goal', budgetGoalInput.value);
+    renderBudgetSummary();
+  });
+
+  function renderBudgetTable() {
+    const body = document.getElementById('budget-body');
+    body.innerHTML = expenses.map((e, i) => `
+      <tr>
+        <td>${e.desc}</td>
+        <td>${e.cat}</td>
+        <td>€${Number(e.amount).toFixed(2)}</td>
+        <td><button class="del-btn" data-idx="${i}">Remove</button></td>
+      </tr>
+    `).join('');
+  }
+
+  function renderBudgetSummary() {
+    const total = expenses.reduce((s, e) => s + Number(e.amount), 0);
+    const goal = Number(budgetGoalInput.value) || 0;
+    document.getElementById('sum-spent').textContent = `€${total.toFixed(2)}`;
+    document.getElementById('sum-remaining').textContent = goal ? `€${(goal - total).toFixed(2)}` : '—';
+    document.getElementById('sum-count').textContent = expenses.length;
+  }
+
+  document.getElementById('budget-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const desc = document.getElementById('exp-desc').value.trim();
+    const cat = document.getElementById('exp-cat').value;
+    const amount = parseFloat(document.getElementById('exp-amount').value);
+    if (!desc || isNaN(amount)) return;
+    expenses.push({ desc, cat, amount });
+    saveState('croatia_budget_expenses', expenses);
+    e.target.reset();
+    renderBudgetTable();
+    renderBudgetSummary();
+  });
+
+  document.getElementById('budget-body').addEventListener('click', (e) => {
+    if (e.target.matches('.del-btn')) {
+      const idx = Number(e.target.dataset.idx);
+      expenses.splice(idx, 1);
+      saveState('croatia_budget_expenses', expenses);
+      renderBudgetTable();
+      renderBudgetSummary();
+    }
+  });
+
+  renderBudgetTable();
+  renderBudgetSummary();
+
+  // ---------- Phrases ----------
+  const phrases = [
+    ['Hello', 'Bok / Dobar dan', 'bok / DOH-bar dahn'],
+    ['Good evening', 'Dobra večer', 'DOH-brah VEH-cher'],
+    ['Please', 'Molim', 'MOH-leem'],
+    ['Thank you', 'Hvala', 'HVAH-lah'],
+    ['Yes / No', 'Da / Ne', 'dah / neh'],
+    ['Excuse me / Sorry', 'Oprostite', 'oh-PROH-stee-teh'],
+    ['Do you speak English?', 'Govorite li engleski?', 'GOH-voh-ree-teh lee EN-gleh-skee'],
+    ['Where is...?', 'Gdje je...?', 'g-dyeh yeh'],
+    ['How much does it cost?', 'Koliko košta?', 'KOH-lee-koh KOSH-tah'],
+    ['The bill, please', 'Račun, molim', 'RAH-choon MOH-leem'],
+    ['Cheers!', 'Živjeli!', 'ZHEEV-yeh-lee'],
+    ['Water', 'Voda', 'VOH-dah'],
+    ['Beer / Wine', 'Pivo / Vino', 'PEE-voh / VEE-noh'],
+    ['Good / Great', 'Dobro / Odlično', 'DOH-broh / OHD-lich-noh'],
+    ['Goodbye', 'Doviđenja', 'doh-vee-JEH-nyah'],
+    ['Help!', 'Upomoć!', 'oo-POH-mohch']
+  ];
+  document.getElementById('phrase-body').innerHTML = phrases.map(([en, hr, pr]) =>
+    `<tr><td>${en}</td><td><strong>${hr}</strong></td><td>${pr}</td></tr>`
+  ).join('');
+
+  // ---------- Food ----------
+  const foodData = [
+    { city: 'Zagreb', items: ['Štrukli (baked cheese pastry)', 'Zagrebački odrezak (breaded veal/ham/cheese cutlet)', 'Purica s mlincima (turkey with pasta sheets)'], tip: 'Browse Dolac Market and grab lunch on Tkalčićeva Street.' },
+    { city: 'Plitvice area', items: ['Fresh trout', 'Local cheese & smoked meats (pršut)', 'Homemade štrukli'], tip: 'Small konobas near the park entrances serve hearty mountain fare.' },
+    { city: 'Zadar', items: ['Fritule (fried dough balls)', 'Maraschino liqueur', 'Fresh grilled seafood'], tip: 'Watch sunset at the Sea Organ, then dine in the old town.' },
+    { city: 'Split / Dalmatia', items: ['Crni rižot (black cuttlefish risotto)', 'Pašticada (braised beef stew)', 'Soparnik (savory chard pie)', 'Peka (meat/seafood slow-cooked under a bell)'], tip: 'Order peka a few hours ahead — it\'s cooked to order.' },
+    { city: 'Hvar', items: ['Fresh seafood platters', 'Gregada (fish stew)', 'Plavac Mali red wine'], tip: 'Try a konoba just outside the main square for better value.' },
+    { city: 'Dubrovnik', items: ['Rozata (custard dessert)', 'Black risotto', 'Fresh oysters (day trip to Ston is famous for them)'], tip: 'Buža Bar for a cliffside sunset drink is a must.' }
+  ];
+  document.getElementById('food-grid').innerHTML = foodData.map(f => `
+    <div class="food-card">
+      <h3>${f.city}</h3>
+      <ul>${f.items.map(i => `<li>${i}</li>`).join('')}</ul>
+      <p class="try"><em>${f.tip}</em></p>
+    </div>
+  `).join('');
+</script>
+
+</body>
+</html>
