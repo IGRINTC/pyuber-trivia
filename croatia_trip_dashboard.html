@@ -179,6 +179,40 @@
   }
   .map-links a:hover { background: var(--accent2); color: #04202a; }
 
+  /* Hotels */
+  .hotel-stay-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 16px;
+  }
+  .hotel-stay-card .day-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .hotel-stay-card .day-head h3 { margin: 0; color: var(--gold); }
+  .hotel-stay-card .day-head span.date { color: var(--muted); font-size: 0.85rem; }
+  .hotel-stay-card .near { color: var(--muted); font-size: 0.85rem; margin: 0 0 10px; }
+  table.hotel-table { width: 100%; border-collapse: collapse; margin-top: 6px; }
+  table.hotel-table th, table.hotel-table td {
+    text-align: left;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.88rem;
+    vertical-align: top;
+  }
+  table.hotel-table th { color: var(--muted); font-weight: 500; }
+  table.hotel-table tr.chosen { background: rgba(46,196,182,0.1); }
+  table.hotel-table td.pick { text-align: center; }
+  table.hotel-table input[type=radio] { accent-color: var(--accent2); width: 16px; height: 16px; }
+  table.hotel-table a { color: var(--accent2); text-decoration: none; }
+  table.hotel-table a:hover { text-decoration: underline; }
+
   .progress-wrap {
     background: var(--card-alt);
     border-radius: 999px;
@@ -306,6 +340,7 @@
 <nav class="tabs">
   <button data-panel="overview" class="active">Overview</button>
   <button data-panel="itinerary">Itinerary</button>
+  <button data-panel="hotels">Hotels</button>
   <button data-panel="packing">Packing</button>
   <button data-panel="budget">Budget</button>
   <button data-panel="phrases">Phrases</button>
@@ -327,13 +362,27 @@
     </div>
     <div class="overview-grid">
       <div class="info-card">
-        <h3>✈️ Flights</h3>
-        <p>Arrival: Sep 8, Zagreb (ZAG)</p>
-        <p>Departure: Sep 16, ~23:59 (midnight) from Dubrovnik (DBV)</p>
+        <h3>✈️ Outbound — LY5181</h3>
+        <p>Tel Aviv (Ben Gurion, T1) → Zagreb</p>
+        <p>Dep 21:00 → Arr 23:25, Tue Sep 8 (3h25m)</p>
+        <p>Operated by Klasjet o/b/o Sundor, marketed by El Al</p>
+      </div>
+      <div class="info-card">
+        <h3>✈️ Return — LY5182</h3>
+        <p>Zagreb → Tel Aviv (Ben Gurion, T3)</p>
+        <p>Dep 00:30 → Arr 04:40, Wed Sep 16 (3h10m)</p>
+        <p style="color:#f4b942">⚠️ Departs from Zagreb, not Dubrovnik — see note below</p>
+      </div>
+      <div class="info-card">
+        <h3>👨‍👩‍👧‍👧 Travelers & Seats</h3>
+        <p>Yael (11F outbound / 17D return)</p>
+        <p>Igal Benjamin (11E / 17F)</p>
+        <p>Hadar (12F / 17E)</p>
+        <p>Neta (12D / 17B) · Maya (12E / 17A)</p>
       </div>
       <div class="info-card">
         <h3>📅 Duration</h3>
-        <p>9 days / 8 nights</p>
+        <p>9 days / 8 nights, Sep 8-16</p>
         <p>Classic Croatia coastal route, north to south</p>
       </div>
       <div class="info-card">
@@ -365,6 +414,15 @@
     <div class="progress-label">Trip progress: <span id="itin-progress-text">0 / 0</span> tasks done</div>
     <div class="progress-wrap"><div class="progress-bar" id="itin-progress-bar"></div></div>
     <div id="itinerary-days"></div>
+  </section>
+
+  <!-- HOTELS -->
+  <section id="hotels" class="panel">
+    <h2 class="section-title">Hotel Options</h2>
+    <div class="progress-label">Chosen: <span id="hotel-progress-text">0 / 0</span> stays</div>
+    <div class="progress-wrap"><div class="progress-bar" id="hotel-progress-bar"></div></div>
+    <div id="hotels-days"></div>
+    <p class="note">Prices are rough estimates from a point-in-time search (currency-converted in some cases) — confirm live pricing and availability directly before booking.</p>
   </section>
 
   <!-- PACKING -->
@@ -440,7 +498,7 @@
   });
 
   // ---------- Countdown ----------
-  const tripStart = new Date('2026-09-08T00:00:00');
+  const tripStart = new Date('2026-09-08T21:00:00'); // LY5181 TLV departure
   function updateCountdown() {
     const now = new Date();
     let diff = tripStart - now;
@@ -470,23 +528,20 @@
 
   // ---------- Itinerary Data ----------
   const itinerary = [
-    { date: 'Tue, Sep 8', title: 'Arrive in Zagreb', tasks: [
-        'Land at Zagreb Airport & transfer to hotel',
-        'Check in and freshen up',
+    { date: 'Tue, Sep 8', title: 'Arrive in Zagreb (late night)', tasks: [
+        'LY5181 lands at Zagreb Airport 23:25 — collect bags',
+        'Transfer to hotel (expect ~1am check-in)',
+        'Check in and rest — sightseeing starts tomorrow'
+      ], maps: ['Zagreb Franjo Tuđman Airport'] },
+    { date: 'Wed, Sep 9', title: 'Zagreb → Plitvice Lakes National Park', tasks: [
+        'Late/relaxed start after the overnight arrival',
         'Stroll Ban Jelačić Square',
         'Explore Upper Town (Gornji Grad) & St. Mark\'s Church',
-        'Ride the Lotrščak Tower / hear the noon cannon (if timing allows)',
-        'Browse Dolac Market',
-        'Dinner on Tkalčićeva Street'
-      ], maps: ['Ban Jelačić Square Zagreb', "St. Mark's Church Zagreb", 'Dolac Market Zagreb'] },
-    { date: 'Wed, Sep 9', title: 'Zagreb → Plitvice Lakes National Park', tasks: [
-        'Morning: Zagreb Cathedral or Museum of Broken Relationships',
+        'Browse Dolac Market, grab lunch nearby',
         'Pick up rental car',
         'Drive to Plitvice Lakes (~2 hrs)',
-        'Check in near the park',
-        'Afternoon walk of the Lower Lakes (Entrance 1)',
-        'Catch sunset at a viewpoint'
-      ], maps: ['Zagreb Cathedral', 'Plitvice Lakes National Park Entrance 1'] },
+        'Check in near the park, catch sunset at a viewpoint'
+      ], maps: ['Ban Jelačić Square Zagreb', "St. Mark's Church Zagreb", 'Dolac Market Zagreb', 'Plitvice Lakes National Park Entrance 1'] },
     { date: 'Thu, Sep 10', title: 'Plitvice Lakes → Zadar', tasks: [
         'Morning: hike Upper Lakes + boat/panoramic train ride',
         'Drive to Zadar (~1.5 hrs)',
@@ -577,6 +632,105 @@
     }
   });
   updateItinProgress();
+
+  // ---------- Hotels ----------
+  const hotelStays = [
+    { city: 'Zagreb', dates: 'Tue Sep 8 → Wed Sep 9 (1 night)', near: 'Ban Jelačić Square, Upper Town/St. Mark\'s, Dolac Market, Tkalčićeva Street',
+      options: [
+        { name: 'Hotel Capital', area: 'Lower Town', price: '~€125-135/night', why: '4-min walk to Ban Jelačić Square', link: 'https://www.booking.com/hotel/hr/amadria-park-capital.html' },
+        { name: 'Best Western Premier Astoria', area: 'Lower Town', price: '~€140-150/night', why: 'Free private parking, near Main Station', link: 'https://www.booking.com/hotel/hr/astoria.html' },
+        { name: 'Hotel PARK 45', area: 'Lower Town', price: '~€120-130/night', why: 'Secure parking, tram access', link: 'https://www.booking.com/hotel/hr/park-45.html' },
+        { name: 'MANDA Heritage Hotel', area: 'Lower Town', price: '~€105-115/night', why: 'Close to Cathedral/Dolac Market', link: 'https://www.booking.com/hotel/hr/manda-heritage.html' }
+      ] },
+    { city: 'Plitvice Lakes area', dates: 'Wed Sep 9 → Thu Sep 10 (1 night)', near: 'Plitvice Lakes National Park Entrance 1/2',
+      options: [
+        { name: 'Hotel Jezero', area: 'At Entrance 2', price: '~€130-220/night (verify)', why: 'Run by the park itself, steps from entrance, free parking', link: 'https://np-plitvicka-jezera.hr/planirajte-posjet/hoteli-i-kampovi/hotel-jezero/' },
+        { name: 'Plitvice Miric Inn', area: 'Near park', price: 'Verify directly', why: '4.8/5, family-run, private parking', link: 'https://www.tripadvisor.com/Hotel_Review-g303827-d2249023-Reviews-Plitvice_Miric_Inn-Plitvice_Lakes_National_Park_Central_Croatia.html' },
+        { name: '16 Lakes Hotel', area: 'Grabovac', price: 'Verify directly', why: 'Near entrance, on-site restaurant/parking', link: 'https://www.tripadvisor.com/Hotel_Review-g644071-d2712236-Reviews-16_Lakes_Hotel-Grabovac_Plitvice_Lakes_National_Park_Central_Croatia.html' },
+        { name: 'Etno Garden Exclusive Rooms', area: 'Quieter entrance', price: 'Verify directly', why: '4.4/5, boutique feel', link: 'https://www.tripadvisor.com/Hotel_Review-g1190792-d1197604-Reviews-Etno_Garden_Exclusive_Rooms-Plitvica_Plitvice_Lakes_National_Park_Central_Croatia.html' }
+      ] },
+    { city: 'Zadar', dates: 'Thu Sep 10 → Fri Sep 11 (1 night)', near: 'Sea Organ, Greeting to the Sun, Zadar Old Town, St. Donatus Church',
+      options: [
+        { name: 'Teatro Verdi Boutique', area: 'Old Town', price: '~€95-105/night', why: 'Directly in Old Town', link: 'https://www.booking.com/hotel/hr/teatro-verdi-boutique.html' },
+        { name: 'Art Hotel Kalelarga', area: 'Old Town', price: 'Verify directly', why: 'On the main promenade', link: 'https://www.booking.com/hotel/hr/art-kalelarga.html' },
+        { name: 'Miramare Hotel', area: 'Kolovare Beach', price: '~€185-195/night', why: 'Free parking, 2-min walk to beach', link: 'https://www.booking.com/hotel/hr/miramare-zadar.html' },
+        { name: 'Almayer Art & Heritage', area: 'Old Town', price: '~€220-230/night', why: 'Adults-only heritage property', link: 'https://www.booking.com/hotel/hr/almayer-art-heritage.html' }
+      ] },
+    { city: 'Split', dates: 'Fri Sep 11 → Sun Sep 13 (2 nights)', near: 'Diocletian\'s Palace, Riva promenade, Marjan Hill, Bačvice Beach',
+      options: [
+        { name: 'Marvie Hotel & Health', area: '~0.9mi from Palace', price: '~€140-150/night', why: 'Rooftop pool, private parking', link: 'https://www.booking.com/hotel/hr/marvie.html' },
+        { name: 'Dioklecijan Hotel & Residence', area: 'Near Old Town', price: '~€110-120/night', why: 'Rooftop pool, wellness center', link: 'https://www.booking.com/hotel/hr/dioklecijan-residence.html' },
+        { name: 'Heritage Santa Lucia', area: 'Near center', price: '~€150-160/night', why: 'Private parking, 9.4/10 rated', link: 'https://www.booking.com/hotel/hr/heritage-santa-lucia.html' },
+        { name: 'AC Hotel by Marriott', area: 'Split', price: '~€115-125/night', why: 'Reliable chain, easy parking', link: 'https://www.booking.com/hotel/hr/ac-by-marriott-split.html' }
+      ] },
+    { city: 'Hvar Town', dates: 'Sun Sep 13 → Tue Sep 15 (2 nights)', near: 'Hvar Old Town, St. Stephen\'s Square, Fortica Fortress, ferry port',
+      options: [
+        { name: 'Heritage Hotel Park Hvar', area: 'Old Town', price: '~€145-155/night', why: 'Garden/terrace, in Old Town', link: 'https://www.booking.com/hotel/hr/heritage-park-hvar.html' },
+        { name: 'Velada Center', area: 'Old Town', price: '~€175-185/night', why: '3-min walk to St. Stephen\'s Square', link: 'https://www.booking.com/hotel/hr/studio-apartments-kercic.html' },
+        { name: 'City Center Room Olivia', area: 'Old Town', price: '~€120-130/night', why: '7-min walk to Franciscan Monastery Beach', link: 'https://www.booking.com/hotel/hr/room-city-center-hvar.html' },
+        { name: 'Slavko', area: 'Old Town', price: 'Verify directly', why: 'Near harbor/ferry area', link: 'https://www.booking.com/hotel/hr/slavko-hvar.html' }
+      ] },
+    { city: 'Dubrovnik', dates: 'Tue Sep 15 → Wed Sep 16 (1 night, midnight flight)', near: 'Dubrovnik Old Town, City Walls, Buža Bar, Old Harbor, Mt. Srđ cable car, Airport',
+      options: [
+        { name: 'City Hotel Dubrovnik', area: 'Near Bellevue Beach', price: '~€190-200/night', why: '11-min walk to Old Town', link: 'https://www.booking.com/hotel/hr/city-dubrovnik.html' },
+        { name: 'Palacio Celeste', area: 'Old Town', price: '~€280-290/night', why: 'Best walkability to Walls', link: 'https://www.booking.com/hotel/hr/palacio-celeste.html' },
+        { name: 'SUNce Palace Apartments', area: '~330ft from Walls', price: '~€290-300/night', why: 'Extremely central', link: 'https://www.booking.com/hotel/hr/sunce-palace-apartments.html' },
+        { name: 'Boutique Hotel Porto', area: 'Near Bellevue Beach', price: '~€275-285/night', why: 'Private parking, sea-adjacent', link: 'https://www.booking.com/hotel/hr/porto-dubrovnik.html' }
+      ] }
+  ];
+
+  const hotelsDaysEl = document.getElementById('hotels-days');
+  const hotelChoice = loadState('croatia_hotel_choice');
+
+  hotelStays.forEach((stay, sIdx) => {
+    const card = document.createElement('div');
+    card.className = 'hotel-stay-card';
+    const rows = stay.options.map((opt, oIdx) => {
+      const id = `h${sIdx}-o${oIdx}`;
+      const checked = hotelChoice[`stay${sIdx}`] === id;
+      return `<tr class="${checked ? 'chosen' : ''}" data-row="${id}">
+        <td class="pick"><input type="radio" name="stay${sIdx}" data-stay="${sIdx}" data-id="${id}" ${checked ? 'checked' : ''}></td>
+        <td>${opt.name}</td>
+        <td>${opt.area}</td>
+        <td>${opt.price}</td>
+        <td>${opt.why}</td>
+        <td><a href="${opt.link}" target="_blank" rel="noopener">View</a></td>
+      </tr>`;
+    }).join('');
+    card.innerHTML = `
+      <div class="day-head">
+        <h3>${stay.city}</h3>
+        <span class="date">${stay.dates}</span>
+      </div>
+      <p class="near">Near: ${stay.near}</p>
+      <table class="hotel-table">
+        <thead><tr><th></th><th>Hotel</th><th>Area</th><th>Price</th><th>Why it fits</th><th>Link</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    `;
+    hotelsDaysEl.appendChild(card);
+  });
+
+  function updateHotelProgress() {
+    const total = hotelStays.length;
+    const done = Object.keys(hotelChoice).filter(k => k.startsWith('stay')).length;
+    document.getElementById('hotel-progress-text').textContent = `${done} / ${total}`;
+    document.getElementById('hotel-progress-bar').style.width = total ? `${(done/total)*100}%` : '0%';
+  }
+
+  hotelsDaysEl.addEventListener('change', (e) => {
+    if (e.target.matches('input[type=radio]')) {
+      const stayIdx = e.target.dataset.stay;
+      const id = e.target.dataset.id;
+      hotelChoice[`stay${stayIdx}`] = id;
+      saveState('croatia_hotel_choice', hotelChoice);
+      const table = e.target.closest('table');
+      table.querySelectorAll('tr').forEach(r => r.classList.remove('chosen'));
+      e.target.closest('tr').classList.add('chosen');
+      updateHotelProgress();
+    }
+  });
+  updateHotelProgress();
 
   // ---------- Packing ----------
   const packingData = {
