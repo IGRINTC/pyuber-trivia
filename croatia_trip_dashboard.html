@@ -328,7 +328,7 @@
 
 <header>
   <h1>🇭🇷 Croatia Adventure</h1>
-  <p class="sub">September 8 – 16, 2026 &nbsp;|&nbsp; Zagreb → Plitvice → Zadar → Split → Hvar → Dubrovnik</p>
+  <p class="sub">September 8 – 16, 2026 &nbsp;|&nbsp; Zagreb → Plitvice → Zadar → Split → Dubrovnik → Zagreb</p>
   <div id="countdown">
     <div class="cd-box"><div class="num" id="cd-days">--</div><div class="label">Days</div></div>
     <div class="cd-box"><div class="num" id="cd-hours">--</div><div class="label">Hours</div></div>
@@ -357,8 +357,7 @@
       <span class="route-chip">💧 Plitvice Lakes</span><span class="route-arrow">→</span>
       <span class="route-chip">🌅 Zadar</span><span class="route-arrow">→</span>
       <span class="route-chip">🏛️ Split</span><span class="route-arrow">→</span>
-      <span class="route-chip">🏝️ Hvar</span><span class="route-arrow">→</span>
-      <span class="route-chip">🏰 Dubrovnik (day trip)</span><span class="route-arrow">→</span>
+      <span class="route-chip">🏰 Dubrovnik (2 nights)</span><span class="route-arrow">→</span>
       <span class="route-chip">🏙️ Zagreb</span>
     </div>
     <div class="overview-grid">
@@ -372,7 +371,7 @@
         <h3>✈️ Return — LY5182</h3>
         <p>Zagreb → Tel Aviv (Ben Gurion, T3)</p>
         <p>Dep 00:30 → Arr 04:40, Wed Sep 16 (3h10m)</p>
-        <p style="color:#f4b942">⚠️ Departs from Zagreb, not Dubrovnik — see note below</p>
+        <p style="color:#f4b942">⚠️ Departs from Zagreb — itinerary loops back there by Sep 15 evening</p>
       </div>
       <div class="info-card">
         <h3>👨‍👩‍👧‍👧 Travelers & Seats</h3>
@@ -384,7 +383,7 @@
       <div class="info-card">
         <h3>📅 Duration</h3>
         <p>9 days / 8 nights, Sep 8-16</p>
-        <p>Classic Croatia coastal route, north to south</p>
+        <p>Starts at Plitvice Lakes, 2 nights in Dubrovnik, no single drive over ~5 hours</p>
       </div>
       <div class="info-card">
         <h3>🌤️ September Weather</h3>
@@ -393,9 +392,8 @@
       </div>
       <div class="info-card">
         <h3>🚗 Getting Around</h3>
-        <p>Rental car: Zagreb → Split (drop off before islands)</p>
-        <p>Catamaran: Split ↔ Hvar ↔ Dubrovnik</p>
-        <p style="color:#f4b942">One-way rental car: Dubrovnik → Zagreb (last day, ~6hr drive)</p>
+        <p>Single round-trip rental car: pick up & drop off in Zagreb</p>
+        <p>Longest legs: Split↔Dubrovnik ~4hrs, Dubrovnik→Zagreb split into 2 legs (~4h + ~4.5h via a break in Split) so no drive exceeds ~5 hours</p>
       </div>
       <div class="info-card">
         <h3>💶 Currency</h3>
@@ -537,54 +535,55 @@
       ], maps: ['Zagreb Franjo Tuđman Airport'] },
     { date: 'Wed, Sep 9', title: 'Zagreb → Plitvice Lakes National Park', tasks: [
         'Late/relaxed start after the overnight arrival',
-        'Stroll Ban Jelačić Square',
-        'Explore Upper Town (Gornji Grad) & St. Mark\'s Church',
-        'Browse Dolac Market, grab lunch nearby',
         'Pick up rental car',
         'Drive to Plitvice Lakes (~2 hrs)',
-        'Check in near the park, catch sunset at a viewpoint'
-      ], maps: ['Ban Jelačić Square Zagreb', "St. Mark's Church Zagreb", 'Dolac Market Zagreb', 'Plitvice Lakes National Park Entrance 1'] },
-    { date: 'Thu, Sep 10', title: 'Plitvice Lakes → Zadar', tasks: [
-        'Morning: hike Upper Lakes + boat/panoramic train ride',
-        'Drive to Zadar (~1.5 hrs)',
+        'Check in near the park',
+        'Afternoon walk of the Lower Lakes (Entrance 1)',
+        'Catch sunset at a viewpoint'
+      ], maps: ['Plitvice Lakes National Park Entrance 1'] },
+    { date: 'Thu, Sep 10', title: 'Plitvice Lakes National Park (full day)', tasks: [
+        'Full day hiking the Upper & Lower Lakes',
+        'Boat ride across Kozjak Lake',
+        'Panoramic train ride between sections',
+        'Photo stops at the major waterfalls',
+        'Relaxed dinner near the park'
+      ], maps: ['Plitvice Lakes Upper Lakes', 'Plitvice Lakes National Park Entrance 2'] },
+    { date: 'Fri, Sep 11', title: 'Plitvice → Zadar', tasks: [
+        'Morning: last walk or lake view before checkout',
+        'Drive to Zadar (~1.5-2 hrs)',
         'Check into hotel',
+        'Zadar Old Town: Roman Forum & St. Donatus Church',
         'Sunset at the Sea Organ & Greeting to the Sun',
         'Dinner in Zadar Old Town'
-      ], maps: ['Plitvice Lakes Upper Lakes', 'Sea Organ Zadar', 'Zadar Old Town'] },
-    { date: 'Fri, Sep 11', title: 'Zadar → Split', tasks: [
-        'Morning: Zadar Roman Forum & St. Donatus Church',
+      ], maps: ["St. Donatus Church Zadar", 'Sea Organ Zadar', 'Zadar Old Town'] },
+    { date: 'Sat, Sep 12', title: 'Zadar → Split', tasks: [
         'Optional detour: Krka National Park waterfalls',
-        'Drive to Split (~2.5-3 hrs with stop)',
-        'Evening: Diocletian\'s Palace & Riva promenade'
-      ], maps: ["St. Donatus Church Zadar", 'Krka National Park', "Diocletian's Palace Split"] },
-    { date: 'Sat, Sep 12', title: 'Split', tasks: [
-        'Explore Diocletian\'s Palace in depth',
+        'Drive to Split (~2-2.5 hrs)',
+        'Check into hotel',
+        'Explore Diocletian\'s Palace & Riva promenade',
         'Climb St. Domnius Cathedral bell tower',
-        'Hike Marjan Hill for the viewpoint',
-        'Beach time at Bačvice',
         'Dinner along the Riva'
-      ], maps: ['Cathedral of St Domnius Split', 'Marjan Hill Split', 'Bačvice Beach Split'] },
-    { date: 'Sun, Sep 13', title: 'Split → Hvar', tasks: [
-        'Return rental car / morning ferry to Hvar Town (~1 hr)',
-        'Check in',
-        'Explore Hvar Old Town & St. Stephen\'s Square',
-        'Climb up to Fortica Fortress for sunset views'
-      ], maps: ['Hvar Town ferry port', "St Stephen's Square Hvar", 'Fortica Fortress Hvar'] },
-    { date: 'Mon, Sep 14', title: 'Hvar Island', tasks: [
-        'Boat trip to the Pakleni Islands',
-        'Swim & beach hop between coves',
-        'Evening cocktails & nightlife in Hvar Town'
-      ], maps: ['Pakleni Islands', 'Hvar Town'] },
-    { date: 'Tue, Sep 15', title: 'Hvar → Dubrovnik (day trip) → drive to Zagreb', tasks: [
-        '⚠️ Very long day — early start recommended, pack bags before leaving Hvar',
-        'Early morning catamaran Hvar → Dubrovnik (~2.5-3 hrs)',
-        'Pick up one-way rental car in Dubrovnik (drop-off in Zagreb)',
-        'Highlights visit: Old Town walk, City Walls (or shorter partial walk to save time), Buža Bar viewpoint',
-        'Lunch in the Old Town',
-        'Early afternoon: begin the drive to Zagreb (~6 hrs via A1)',
-        'Dinner stop en route (e.g. near Split or a highway rest area)',
-        'Arrive Zagreb late evening'
-      ], maps: ['Dubrovnik ferry port', 'Dubrovnik City Walls', 'Buža Bar Dubrovnik'] },
+      ], maps: ['Krka National Park', "Diocletian's Palace Split", 'Cathedral of St Domnius Split'] },
+    { date: 'Sun, Sep 13', title: 'Split → Dubrovnik', tasks: [
+        'Morning: Marjan Hill viewpoint or Bačvice beach before departing',
+        'Drive to Dubrovnik (~4 hrs — under 5hr limit)',
+        'Check into hotel',
+        'Walk the Old Town & City Walls',
+        'Sunset drink at Buža Bar'
+      ], maps: ['Dubrovnik Old Town', 'Dubrovnik City Walls', 'Buža Bar Dubrovnik'] },
+    { date: 'Mon, Sep 14', title: 'Dubrovnik (full day)', tasks: [
+        'Explore Rector\'s Palace & Franciscan Monastery',
+        'Cable car up to Mt. Srđ for panoramic views',
+        'Optional boat trip to Lokrum Island',
+        'Late dinner near the Old Harbor'
+      ], maps: ["Rector's Palace Dubrovnik", 'Dubrovnik Cable Car', 'Lokrum Island'] },
+    { date: 'Tue, Sep 15', title: 'Dubrovnik → Split (break) → Zagreb', tasks: [
+        'Early check-out and start the drive north',
+        'Leg 1: Dubrovnik → Split (~4 hrs, under 5hr limit)',
+        'Long lunch/rest break in Split (~1.5-2 hrs)',
+        'Leg 2: Split → Zagreb (~4.5 hrs, under 5hr limit)',
+        'Arrive Zagreb by early evening'
+      ], maps: ["Diocletian's Palace Split"] },
     { date: 'Tue night / Wed, Sep 15–16', title: 'Departure from Zagreb', tasks: [
         'Drop off the rental car in Zagreb',
         'Head to Zagreb Airport (Franjo Tuđman) with buffer time',
@@ -647,37 +646,33 @@
         { name: 'Hotel PARK 45', area: 'Lower Town', price: '~€120-130/night', why: 'Secure parking, tram access', link: 'https://www.booking.com/hotel/hr/park-45.html' },
         { name: 'MANDA Heritage Hotel', area: 'Lower Town', price: '~€105-115/night', why: 'Close to Cathedral/Dolac Market', link: 'https://www.booking.com/hotel/hr/manda-heritage.html' }
       ] },
-    { city: 'Plitvice Lakes area', dates: 'Wed Sep 9 → Thu Sep 10 (1 night)', near: 'Plitvice Lakes National Park Entrance 1/2',
+    { city: 'Plitvice Lakes area', dates: 'Wed Sep 9 → Fri Sep 11 (2 nights)', near: 'Plitvice Lakes National Park Entrance 1/2',
       options: [
         { name: 'Hotel Jezero', area: 'At Entrance 2', price: '~€130-220/night (verify)', why: 'Run by the park itself, steps from entrance, free parking', link: 'https://np-plitvicka-jezera.hr/planirajte-posjet/hoteli-i-kampovi/hotel-jezero/' },
         { name: 'Plitvice Miric Inn', area: 'Near park', price: 'Verify directly', why: '4.8/5, family-run, private parking', link: 'https://www.tripadvisor.com/Hotel_Review-g303827-d2249023-Reviews-Plitvice_Miric_Inn-Plitvice_Lakes_National_Park_Central_Croatia.html' },
         { name: '16 Lakes Hotel', area: 'Grabovac', price: 'Verify directly', why: 'Near entrance, on-site restaurant/parking', link: 'https://www.tripadvisor.com/Hotel_Review-g644071-d2712236-Reviews-16_Lakes_Hotel-Grabovac_Plitvice_Lakes_National_Park_Central_Croatia.html' },
         { name: 'Etno Garden Exclusive Rooms', area: 'Quieter entrance', price: 'Verify directly', why: '4.4/5, boutique feel', link: 'https://www.tripadvisor.com/Hotel_Review-g1190792-d1197604-Reviews-Etno_Garden_Exclusive_Rooms-Plitvica_Plitvice_Lakes_National_Park_Central_Croatia.html' }
       ] },
-    { city: 'Zadar', dates: 'Thu Sep 10 → Fri Sep 11 (1 night)', near: 'Sea Organ, Greeting to the Sun, Zadar Old Town, St. Donatus Church',
+    { city: 'Zadar', dates: 'Fri Sep 11 → Sat Sep 12 (1 night)', near: 'Sea Organ, Greeting to the Sun, Zadar Old Town, St. Donatus Church',
       options: [
         { name: 'Teatro Verdi Boutique', area: 'Old Town', price: '~€95-105/night', why: 'Directly in Old Town', link: 'https://www.booking.com/hotel/hr/teatro-verdi-boutique.html' },
         { name: 'Art Hotel Kalelarga', area: 'Old Town', price: 'Verify directly', why: 'On the main promenade', link: 'https://www.booking.com/hotel/hr/art-kalelarga.html' },
         { name: 'Miramare Hotel', area: 'Kolovare Beach', price: '~€185-195/night', why: 'Free parking, 2-min walk to beach', link: 'https://www.booking.com/hotel/hr/miramare-zadar.html' },
         { name: 'Almayer Art & Heritage', area: 'Old Town', price: '~€220-230/night', why: 'Adults-only heritage property', link: 'https://www.booking.com/hotel/hr/almayer-art-heritage.html' }
       ] },
-    { city: 'Split', dates: 'Fri Sep 11 → Sun Sep 13 (2 nights)', near: 'Diocletian\'s Palace, Riva promenade, Marjan Hill, Bačvice Beach',
+    { city: 'Split', dates: 'Sat Sep 12 → Sun Sep 13 (1 night)', near: 'Diocletian\'s Palace, Riva promenade, Marjan Hill, Bačvice Beach',
       options: [
         { name: 'Marvie Hotel & Health', area: '~0.9mi from Palace', price: '~€140-150/night', why: 'Rooftop pool, private parking', link: 'https://www.booking.com/hotel/hr/marvie.html' },
         { name: 'Dioklecijan Hotel & Residence', area: 'Near Old Town', price: '~€110-120/night', why: 'Rooftop pool, wellness center', link: 'https://www.booking.com/hotel/hr/dioklecijan-residence.html' },
         { name: 'Heritage Santa Lucia', area: 'Near center', price: '~€150-160/night', why: 'Private parking, 9.4/10 rated', link: 'https://www.booking.com/hotel/hr/heritage-santa-lucia.html' },
         { name: 'AC Hotel by Marriott', area: 'Split', price: '~€115-125/night', why: 'Reliable chain, easy parking', link: 'https://www.booking.com/hotel/hr/ac-by-marriott-split.html' }
       ] },
-    { city: 'Hvar Town', dates: 'Sun Sep 13 → Tue Sep 15 (2 nights)', near: 'Hvar Old Town, St. Stephen\'s Square, Fortica Fortress, ferry port',
+    { city: 'Dubrovnik', dates: 'Sun Sep 13 → Tue Sep 15 (2 nights)', near: 'Dubrovnik Old Town, City Walls, Buža Bar, Old Harbor, Mt. Srđ cable car',
       options: [
-        { name: 'Heritage Hotel Park Hvar', area: 'Old Town', price: '~€145-155/night', why: 'Garden/terrace, in Old Town', link: 'https://www.booking.com/hotel/hr/heritage-park-hvar.html' },
-        { name: 'Velada Center', area: 'Old Town', price: '~€175-185/night', why: '3-min walk to St. Stephen\'s Square', link: 'https://www.booking.com/hotel/hr/studio-apartments-kercic.html' },
-        { name: 'City Center Room Olivia', area: 'Old Town', price: '~€120-130/night', why: '7-min walk to Franciscan Monastery Beach', link: 'https://www.booking.com/hotel/hr/room-city-center-hvar.html' },
-        { name: 'Slavko', area: 'Old Town', price: 'Verify directly', why: 'Near harbor/ferry area', link: 'https://www.booking.com/hotel/hr/slavko-hvar.html' }
-      ] },
-    { city: 'Dubrovnik', dates: 'Tue Sep 15 — day trip only, no overnight', near: 'Dubrovnik Old Town, City Walls, Buža Bar, Old Harbor',
-      options: [
-        { name: 'No hotel needed', area: '—', price: '—', why: 'Return flight departs from Zagreb at 00:30 — this stop is a same-day visit before driving north', link: '' }
+        { name: 'City Hotel Dubrovnik', area: 'Near Bellevue Beach', price: '~€190-200/night', why: '11-min walk to Old Town', link: 'https://www.booking.com/hotel/hr/city-dubrovnik.html' },
+        { name: 'Palacio Celeste', area: 'Old Town', price: '~€280-290/night', why: 'Best walkability to Walls', link: 'https://www.booking.com/hotel/hr/palacio-celeste.html' },
+        { name: 'SUNce Palace Apartments', area: '~330ft from Walls', price: '~€290-300/night', why: 'Extremely central', link: 'https://www.booking.com/hotel/hr/sunce-palace-apartments.html' },
+        { name: 'Boutique Hotel Porto', area: 'Near Bellevue Beach', price: '~€275-285/night', why: 'Private parking, sea-adjacent', link: 'https://www.booking.com/hotel/hr/porto-dubrovnik.html' }
       ] }
   ];
 
