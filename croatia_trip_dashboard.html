@@ -358,7 +358,8 @@
       <span class="route-chip">🌅 Zadar</span><span class="route-arrow">→</span>
       <span class="route-chip">🏛️ Split</span><span class="route-arrow">→</span>
       <span class="route-chip">🏝️ Hvar</span><span class="route-arrow">→</span>
-      <span class="route-chip">🏰 Dubrovnik</span>
+      <span class="route-chip">🏰 Dubrovnik (day trip)</span><span class="route-arrow">→</span>
+      <span class="route-chip">🏙️ Zagreb</span>
     </div>
     <div class="overview-grid">
       <div class="info-card">
@@ -393,7 +394,8 @@
       <div class="info-card">
         <h3>🚗 Getting Around</h3>
         <p>Rental car: Zagreb → Split (drop off before islands)</p>
-        <p>Ferries/catamarans: Split ↔ Hvar ↔ Dubrovnik</p>
+        <p>Catamaran: Split ↔ Hvar ↔ Dubrovnik</p>
+        <p style="color:#f4b942">One-way rental car: Dubrovnik → Zagreb (last day, ~6hr drive)</p>
       </div>
       <div class="info-card">
         <h3>💶 Currency</h3>
@@ -573,19 +575,22 @@
         'Swim & beach hop between coves',
         'Evening cocktails & nightlife in Hvar Town'
       ], maps: ['Pakleni Islands', 'Hvar Town'] },
-    { date: 'Tue, Sep 15', title: 'Hvar → Dubrovnik', tasks: [
-        'Morning catamaran/ferry to Dubrovnik',
-        'Check in',
-        'Walk the Dubrovnik City Walls',
-        'Sunset drink at Buža Bar'
+    { date: 'Tue, Sep 15', title: 'Hvar → Dubrovnik (day trip) → drive to Zagreb', tasks: [
+        '⚠️ Very long day — early start recommended, pack bags before leaving Hvar',
+        'Early morning catamaran Hvar → Dubrovnik (~2.5-3 hrs)',
+        'Pick up one-way rental car in Dubrovnik (drop-off in Zagreb)',
+        'Highlights visit: Old Town walk, City Walls (or shorter partial walk to save time), Buža Bar viewpoint',
+        'Lunch in the Old Town',
+        'Early afternoon: begin the drive to Zagreb (~6 hrs via A1)',
+        'Dinner stop en route (e.g. near Split or a highway rest area)',
+        'Arrive Zagreb late evening'
       ], maps: ['Dubrovnik ferry port', 'Dubrovnik City Walls', 'Buža Bar Dubrovnik'] },
-    { date: 'Wed, Sep 16', title: 'Dubrovnik — departure at midnight', tasks: [
-        'Explore Old Town, Rector\'s Palace & Franciscan Monastery',
-        'Cable car up to Mt. Srđ for panoramic views',
-        'Optional boat trip to Lokrum Island',
-        'Late dinner near the Old Harbor',
-        'Head to Dubrovnik Airport for the midnight flight'
-      ], maps: ["Rector's Palace Dubrovnik", 'Dubrovnik Cable Car', 'Lokrum Island', 'Dubrovnik Airport'] }
+    { date: 'Tue night / Wed, Sep 15–16', title: 'Departure from Zagreb', tasks: [
+        'Drop off the rental car in Zagreb',
+        'Head to Zagreb Airport (Franjo Tuđman) with buffer time',
+        'Check in for LY5182 — boarding for 00:30 departure',
+        'Land in Tel Aviv 04:40'
+      ], maps: ['Zagreb Franjo Tuđman Airport'] }
   ];
 
   const itinDaysEl = document.getElementById('itinerary-days');
@@ -670,12 +675,9 @@
         { name: 'City Center Room Olivia', area: 'Old Town', price: '~€120-130/night', why: '7-min walk to Franciscan Monastery Beach', link: 'https://www.booking.com/hotel/hr/room-city-center-hvar.html' },
         { name: 'Slavko', area: 'Old Town', price: 'Verify directly', why: 'Near harbor/ferry area', link: 'https://www.booking.com/hotel/hr/slavko-hvar.html' }
       ] },
-    { city: 'Dubrovnik', dates: 'Tue Sep 15 → Wed Sep 16 (1 night, midnight flight)', near: 'Dubrovnik Old Town, City Walls, Buža Bar, Old Harbor, Mt. Srđ cable car, Airport',
+    { city: 'Dubrovnik', dates: 'Tue Sep 15 — day trip only, no overnight', near: 'Dubrovnik Old Town, City Walls, Buža Bar, Old Harbor',
       options: [
-        { name: 'City Hotel Dubrovnik', area: 'Near Bellevue Beach', price: '~€190-200/night', why: '11-min walk to Old Town', link: 'https://www.booking.com/hotel/hr/city-dubrovnik.html' },
-        { name: 'Palacio Celeste', area: 'Old Town', price: '~€280-290/night', why: 'Best walkability to Walls', link: 'https://www.booking.com/hotel/hr/palacio-celeste.html' },
-        { name: 'SUNce Palace Apartments', area: '~330ft from Walls', price: '~€290-300/night', why: 'Extremely central', link: 'https://www.booking.com/hotel/hr/sunce-palace-apartments.html' },
-        { name: 'Boutique Hotel Porto', area: 'Near Bellevue Beach', price: '~€275-285/night', why: 'Private parking, sea-adjacent', link: 'https://www.booking.com/hotel/hr/porto-dubrovnik.html' }
+        { name: 'No hotel needed', area: '—', price: '—', why: 'Return flight departs from Zagreb at 00:30 — this stop is a same-day visit before driving north', link: '' }
       ] }
   ];
 
@@ -694,7 +696,7 @@
         <td>${opt.area}</td>
         <td>${opt.price}</td>
         <td>${opt.why}</td>
-        <td><a href="${opt.link}" target="_blank" rel="noopener">View</a></td>
+        <td>${opt.link ? `<a href="${opt.link}" target="_blank" rel="noopener">View</a>` : ''}</td>
       </tr>`;
     }).join('');
     card.innerHTML = `
