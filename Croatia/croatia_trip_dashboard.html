@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Croatia Trip Dashboard</title>
+<style>
+  :root {
+    --bg: #071c3f;
+    --bg2: #0b2a5c;
+    --card: #0f2f66;
+    --card-alt: #123772;
+    --accent: #e63946;
+    --accent2: #2ec4b6;
+    --gold: #f4b942;
+    --text: #eaf2ff;
+    --muted: #9fb3d1;
+    --border: rgba(255,255,255,0.1);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: linear-gradient(160deg, var(--bg), var(--bg2) 60%, #08213f);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--text);
+  }
+  header {
+    padding: 28px 20px 18px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(45deg, rgba(230,57,70,0.08) 0 10px, transparent 10px 20px);
+    pointer-events: none;
+  }
+  h1 {
+    margin: 0 0 6px;
+    font-size: 2rem;
+    letter-spacing: 0.5px;
+  }
+  header p.sub {
+    margin: 0;
+    color: var(--muted);
+    font-size: 1rem;
+  }
+  #countdown {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 18px;
+    flex-wrap: wrap;
+  }
+  .cd-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 16px;
+    min-width: 70px;
+  }
+  .cd-box .num { font-size: 1.6rem; font-weight: 700; color: var(--gold); }
+  .cd-box .label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+
+  nav.tabs {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 16px 0;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  nav.tabs button {
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 18px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  nav.tabs button:hover { border-color: var(--accent2); }
+  nav.tabs button.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    font-weight: 600;
+  }
+
+  main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 20px 16px 60px;
+  }
+  .panel { display: none; animation: fade 0.25s ease; }
+  .panel.active { display: block; }
+  @keyframes fade { from { opacity: 0; transform: translateY(4px);} to {opacity:1; transform:translateY(0);} }
+
+  h2.section-title {
+    color: var(--gold);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px;
+    margin-top: 0;
+  }
+
+  /* Overview */
+  .route-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    margin: 16px 0;
+  }
+  .route-chip {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+  }
+  .route-arrow { color: var(--accent2); font-weight: bold; }
+  .overview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+    margin-top: 16px;
+  }
+  .info-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+  }
+  .info-card h3 { margin: 0 0 8px; color: var(--accent2); font-size: 1rem; }
+  .info-card p { margin: 4px 0; color: var(--muted); font-size: 0.9rem; }
+
+  /* Itinerary */
+  .day-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 16px;
+  }
+  .day-card .day-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .day-card .day-head h3 { margin: 0; color: var(--gold); }
+  .day-card .day-head span.date { color: var(--muted); font-size: 0.85rem; }
+  .task-list { list-style: none; margin: 0; padding: 0; }
+  .task-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 6px 0;
+    border-bottom: 1px dashed var(--border);
+    font-size: 0.95rem;
+  }
+  .task-list li:last-child { border-bottom: none; }
+  .task-list input[type=checkbox] { margin-top: 3px; accent-color: var(--accent2); width: 16px; height: 16px; }
+  .task-list li.checked span.txt { text-decoration: line-through; color: var(--muted); }
+  .map-links { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .map-links a {
+    font-size: 0.8rem;
+    color: var(--accent2);
+    text-decoration: none;
+    border: 1px solid var(--accent2);
+    padding: 4px 10px;
+    border-radius: 999px;
+  }
+  .map-links a:hover { background: var(--accent2); color: #04202a; }
+
+  /* Map */
+  .map-embed-wrap {
+    position: relative;
+    width: 100%;
+    padding-bottom: 65%;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: var(--card);
+  }
+  .map-embed-wrap iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+  .map-stops {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+    margin-top: 16px;
+  }
+  .map-stop {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    text-decoration: none;
+    color: var(--text);
+    display: block;
+  }
+  .map-stop:hover { border-color: var(--accent2); }
+  .map-stop .n { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .map-stop .city { font-weight: 600; color: var(--gold); margin: 2px 0; }
+  .map-stop .dates { font-size: 0.8rem; color: var(--muted); }
+
+  /* Hotels */
+  .hotel-stay-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 16px;
+  }
+  .hotel-stay-card .day-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .hotel-stay-card .day-head h3 { margin: 0; color: var(--gold); }
+  .hotel-stay-card .day-head span.date { color: var(--muted); font-size: 0.85rem; }
+  .hotel-stay-card .near { color: var(--muted); font-size: 0.85rem; margin: 0 0 10px; }
+  table.hotel-table { width: 100%; border-collapse: collapse; margin-top: 6px; }
+  table.hotel-table th, table.hotel-table td {
+    text-align: left;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.88rem;
+    vertical-align: top;
+  }
+  table.hotel-table th { color: var(--muted); font-weight: 500; }
+  table.hotel-table tr.chosen { background: rgba(46,196,182,0.1); }
+  table.hotel-table td.pick { text-align: center; }
+  table.hotel-table input[type=radio] { accent-color: var(--accent2); width: 16px; height: 16px; }
+  table.hotel-table a { color: var(--accent2); text-decoration: none; }
+  table.hotel-table a:hover { text-decoration: underline; }
+
+  .progress-wrap {
+    background: var(--card-alt);
+    border-radius: 999px;
+    height: 10px;
+    overflow: hidden;
+    margin: 10px 0 18px;
+    border: 1px solid var(--border);
+  }
+  .progress-bar { height: 100%; background: linear-gradient(90deg, var(--accent2), var(--gold)); width: 0%; transition: width 0.3s; }
+  .progress-label { font-size: 0.85rem; color: var(--muted); margin-bottom: 4px; }
+
+  /* Packing */
+  .pack-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+  }
+  .pack-cat {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+  }
+  .pack-cat h3 { margin: 0 0 8px; color: var(--accent2); font-size: 1rem; }
+
+  /* Budget */
+  .budget-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+    background: var(--card);
+    padding: 14px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+  }
+  .budget-form input, .budget-form select {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+  }
+  .budget-form input[type=text] { flex: 1; min-width: 140px; }
+  .budget-form input[type=number] { width: 110px; }
+  .budget-form button, .btn {
+    background: var(--accent);
+    border: none;
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+  }
+  .budget-form button:hover, .btn:hover { opacity: 0.9; }
+  table.budget-table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
+  table.budget-table th, table.budget-table td {
+    text-align: left;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.9rem;
+  }
+  table.budget-table th { color: var(--muted); font-weight: 500; }
+  .del-btn { background: transparent; border: 1px solid var(--accent); color: var(--accent); border-radius: 6px; cursor: pointer; padding: 3px 8px; font-size: 0.8rem; }
+  .budget-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .budget-summary .card {
+    background: var(--card-alt);
+    border-radius: 10px;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+  }
+  .budget-summary .card .amt { font-size: 1.3rem; font-weight: 700; color: var(--gold); }
+  .budget-summary .card .lbl { font-size: 0.8rem; color: var(--muted); }
+  .budget-goal { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+
+  /* Phrases */
+  table.phrase-table { width: 100%; border-collapse: collapse; }
+  table.phrase-table th, table.phrase-table td {
+    padding: 9px 10px;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.92rem;
+    text-align: left;
+  }
+  table.phrase-table th { color: var(--accent2); }
+
+  /* Food */
+  .food-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+  }
+  .food-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+  }
+  .food-card h3 { margin: 0 0 6px; color: var(--gold); }
+  .food-card ul { margin: 6px 0 0; padding-left: 18px; color: var(--muted); font-size: 0.9rem; }
+  .food-card .try { color: var(--text); }
+  .note { font-size: 0.8rem; color: var(--muted); margin-top: 10px; }
+
+  footer { text-align: center; padding: 20px; color: var(--muted); font-size: 0.8rem; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🇭🇷 Croatia Adventure</h1>
+  <p class="sub">September 8 – 16, 2026 &nbsp;|&nbsp; Zagreb → (flight) → Dubrovnik → Split → Zadar → Plitvice → Zagreb</p>
+  <div id="countdown">
+    <div class="cd-box"><div class="num" id="cd-days">--</div><div class="label">Days</div></div>
+    <div class="cd-box"><div class="num" id="cd-hours">--</div><div class="label">Hours</div></div>
+    <div class="cd-box"><div class="num" id="cd-mins">--</div><div class="label">Mins</div></div>
+    <div class="cd-box"><div class="num" id="cd-secs">--</div><div class="label">Secs</div></div>
+  </div>
+</header>
+
+<nav class="tabs">
+  <button data-panel="overview" class="active">Overview</button>
+  <button data-panel="itinerary">Itinerary</button>
+  <button data-panel="map">Map</button>
+  <button data-panel="hotels">Hotels</button>
+  <button data-panel="packing">Packing</button>
+  <button data-panel="budget">Budget</button>
+  <button data-panel="phrases">Phrases</button>
+  <button data-panel="food">Food & Drink</button>
+</nav>
+
+<main>
+
+  <!-- OVERVIEW -->
+  <section id="overview" class="panel active">
+    <h2 class="section-title">Trip Overview</h2>
+    <div class="route-strip">
+      <span class="route-chip">🏙️ Zagreb</span><span class="route-arrow">✈️→</span>
+      <span class="route-chip">🏰 Dubrovnik (2 nights)</span><span class="route-arrow">→</span>
+      <span class="route-chip">🏛️ Split (2 nights)</span><span class="route-arrow">→</span>
+      <span class="route-chip">🌅 Zadar</span><span class="route-arrow">→</span>
+      <span class="route-chip">💧 Plitvice Lakes</span><span class="route-arrow">→</span>
+      <span class="route-chip">🏙️ Zagreb</span>
+    </div>
+    <div class="overview-grid">
+      <div class="info-card">
+        <h3>✈️ Outbound — LY5181</h3>
+        <p>Tel Aviv (Ben Gurion, T1) → Zagreb</p>
+        <p>Dep 21:00 → Arr 23:25, Tue Sep 8 (3h25m)</p>
+        <p>Operated by Klasjet o/b/o Sundor, marketed by El Al</p>
+      </div>
+      <div class="info-card">
+        <h3>✈️ Return — LY5182</h3>
+        <p>Zagreb → Tel Aviv (Ben Gurion, T3)</p>
+        <p>Dep 00:30 → Arr 04:40, Wed Sep 16 (3h10m)</p>
+        <p style="color:#f4b942">⚠️ Departs from Zagreb — itinerary loops back there by Sep 15 evening</p>
+      </div>
+      <div class="info-card">
+        <h3>👨‍👩‍👧‍👧 Travelers & Seats</h3>
+        <p>Yael (11F outbound / 17D return)</p>
+        <p>Igal Benjamin (11E / 17F)</p>
+        <p>Hadar (12F / 17E)</p>
+        <p>Neta (12D / 17B) · Maya (12E / 17A)</p>
+        <p style="color:#9fb3d1">2 adults (Igal, Hadar) + 3 kids (8, 10, 15) — per Zagreb hotel booking</p>
+      </div>
+      <div class="info-card">
+        <h3>✈️ Domestic Flight — OU6660</h3>
+        <p>Croatia Airlines, Zagreb (ZAG) → Dubrovnik (DBV)</p>
+        <p>Dep 11:55 → Arr 12:50, Wed Sep 9 (55min)</p>
+        <p>Checked bags: Igal & Hadar 1×23kg each; Yael/Maya/Neta hand baggage only (8kg)</p>
+      </div>
+      <div class="info-card">
+        <h3>📅 Duration</h3>
+        <p>9 days / 8 nights, Sep 8-16</p>
+        <p>Fly straight to Dubrovnik (2 nights), then drive back north with one relaxed leg per day (never over ~4 hrs)</p>
+      </div>
+      <div class="info-card">
+        <h3>🌤️ September Weather</h3>
+        <p>Warm sea (~23-24°C), sunny days ~26-28°C</p>
+        <p>Fewer crowds than peak summer, pack a light layer for evenings</p>
+      </div>
+      <div class="info-card">
+        <h3>🚗 Getting Around</h3>
+        <p>Rental car picked up in Dubrovnik, dropped off in Zagreb (one-way — confirm drop-off fee)</p>
+        <p>Drive north at an easy pace: Dubrovnik→Split (~4h), Split→Zadar (~2-2.5h), Zadar→Plitvice (~1.5-2h), Plitvice→Zagreb (~2h) — one leg per day, nothing over ~4 hrs</p>
+      </div>
+      <div class="info-card">
+        <h3>💶 Currency</h3>
+        <p>Euro (EUR) — Croatia adopted the euro in 2023</p>
+        <p>Cards widely accepted; carry some cash for small konobas & markets</p>
+      </div>
+      <div class="info-card">
+        <h3>🔌 Practical</h3>
+        <p>Plug type C/F (EU standard, 230V)</p>
+        <p>EU country — check current entry/visa requirements before travel</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ITINERARY -->
+  <section id="itinerary" class="panel">
+    <h2 class="section-title">Day-by-Day Itinerary</h2>
+    <div class="progress-label">Trip progress: <span id="itin-progress-text">0 / 0</span> tasks done</div>
+    <div class="progress-wrap"><div class="progress-bar" id="itin-progress-bar"></div></div>
+    <div id="itinerary-days"></div>
+  </section>
+
+  <!-- MAP -->
+  <section id="map" class="panel">
+    <h2 class="section-title">Trip Map</h2>
+    <p class="note" style="margin-top:0">✈️ Zagreb → Dubrovnik is a flight (not shown as a driving route below). The map covers the driving leg: Dubrovnik → Split → Zadar → Plitvice → Zagreb.</p>
+    <div class="map-embed-wrap">
+      <iframe id="route-map-frame" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
+    <div class="map-stops" id="map-stops"></div>
+  </section>
+
+  <!-- HOTELS -->
+  <section id="hotels" class="panel">
+    <h2 class="section-title">Hotel Options</h2>
+    <div class="progress-label">Chosen: <span id="hotel-progress-text">0 / 0</span> stays</div>
+    <div class="progress-wrap"><div class="progress-bar" id="hotel-progress-bar"></div></div>
+    <div id="hotels-days"></div>
+    <p class="note">Prices are rough estimates from a point-in-time search (currency-converted in some cases) — confirm live pricing and availability directly before booking.</p>
+  </section>
+
+  <!-- PACKING -->
+  <section id="packing" class="panel">
+    <h2 class="section-title">Packing Checklist</h2>
+    <div class="progress-label">Packed: <span id="pack-progress-text">0 / 0</span></div>
+    <div class="progress-wrap"><div class="progress-bar" id="pack-progress-bar"></div></div>
+    <div class="pack-grid" id="pack-grid"></div>
+  </section>
+
+  <!-- BUDGET -->
+  <section id="budget" class="panel">
+    <h2 class="section-title">Budget Tracker</h2>
+    <div class="budget-goal">
+      <label for="budget-goal-input">Total trip budget (€):</label>
+      <input type="number" id="budget-goal-input" min="0" step="10" placeholder="e.g. 2000">
+    </div>
+    <div class="budget-summary">
+      <div class="card"><div class="amt" id="sum-spent">€0</div><div class="lbl">Total spent</div></div>
+      <div class="card"><div class="amt" id="sum-remaining">€0</div><div class="lbl">Remaining</div></div>
+      <div class="card"><div class="amt" id="sum-count">0</div><div class="lbl">Expenses logged</div></div>
+    </div>
+    <form class="budget-form" id="budget-form">
+      <input type="text" id="exp-desc" placeholder="Description (e.g. Hotel Zagreb)" required>
+      <select id="exp-cat">
+        <option>Accommodation</option>
+        <option>Food & Drink</option>
+        <option>Transport</option>
+        <option>Activities</option>
+        <option>Shopping</option>
+        <option>Misc</option>
+      </select>
+      <input type="number" id="exp-amount" placeholder="Amount €" min="0" step="0.01" required>
+      <button type="submit">Add Expense</button>
+    </form>
+    <table class="budget-table" id="budget-table">
+      <thead><tr><th>Description</th><th>Category</th><th>Amount</th><th></th></tr></thead>
+      <tbody id="budget-body"></tbody>
+    </table>
+  </section>
+
+  <!-- PHRASES -->
+  <section id="phrases" class="panel">
+    <h2 class="section-title">Key Croatian Phrases</h2>
+    <table class="phrase-table">
+      <thead><tr><th>English</th><th>Croatian</th><th>Pronunciation</th></tr></thead>
+      <tbody id="phrase-body"></tbody>
+    </table>
+  </section>
+
+  <!-- FOOD -->
+  <section id="food" class="panel">
+    <h2 class="section-title">Food & Drink Guide</h2>
+    <div class="food-grid" id="food-grid"></div>
+    <p class="note">Recommendations are general dish/style guides — verify specific restaurant hours, reservations, and current reviews before visiting.</p>
+  </section>
+
+</main>
+
+<footer>Made for the September 2026 Croatia trip · Data is stored locally in your browser (nothing is uploaded anywhere)</footer>
+
+<script>
+  // ---------- Tabs ----------
+  const tabButtons = document.querySelectorAll('nav.tabs button');
+  const panels = document.querySelectorAll('.panel');
+  tabButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tabButtons.forEach(b => b.classList.remove('active'));
+      panels.forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.panel).classList.add('active');
+    });
+  });
+
+  // ---------- Countdown ----------
+  const tripStart = new Date('2026-09-08T21:00:00'); // LY5181 TLV departure
+  function updateCountdown() {
+    const now = new Date();
+    let diff = tripStart - now;
+    if (diff < 0) diff = 0;
+    const days = Math.floor(diff / (1000*60*60*24));
+    const hours = Math.floor((diff / (1000*60*60)) % 24);
+    const mins = Math.floor((diff / (1000*60)) % 60);
+    const secs = Math.floor((diff / 1000) % 60);
+    document.getElementById('cd-days').textContent = days;
+    document.getElementById('cd-hours').textContent = String(hours).padStart(2,'0');
+    document.getElementById('cd-mins').textContent = String(mins).padStart(2,'0');
+    document.getElementById('cd-secs').textContent = String(secs).padStart(2,'0');
+  }
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+
+  // ---------- Helpers ----------
+  function mapLink(query) {
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+  }
+  function loadState(key) {
+    try { return JSON.parse(localStorage.getItem(key)) || {}; } catch(e) { return {}; }
+  }
+  function saveState(key, obj) {
+    localStorage.setItem(key, JSON.stringify(obj));
+  }
+
+  // ---------- Itinerary Data ----------
+  const itinerary = [
+    { date: 'Tue, Sep 8', title: 'Arrive in Zagreb (late night)', tasks: [
+        'LY5181 lands at Zagreb Airport 23:25 — collect bags',
+        'Transfer to hotel (expect ~1am check-in)',
+        'Check in and rest — sightseeing starts tomorrow'
+      ], maps: ['Zagreb Franjo Tuđman Airport'] },
+    { date: 'Wed, Sep 9', title: 'Zagreb → Dubrovnik (domestic flight)', tasks: [
+        'Morning in Zagreb — pack up and check out',
+        'Head to Zagreb Airport with buffer time before the 11:55 departure',
+        'Flight OU6660 (Croatia Airlines): Zagreb → Dubrovnik, 11:55 → 12:50',
+        'Pick up one-way rental car in Dubrovnik (drop-off in Zagreb)',
+        'Check into hotel — afternoon free, pick from the options below',
+        'Option: Casual stroll down Stradun & through the Pile Gate',
+        'Option: Relax at Banje Beach (closest beach to Old Town)',
+        'Option: Kayak tour along the Old Town city walls',
+        'Option: Cable car up to Mt. Srđ for sunset views (save Walls/Rector\'s Palace for tomorrow)',
+        'Option: Early dinner at a konoba in the Old Town'
+      ], maps: ['Zagreb Franjo Tuđman Airport', 'Dubrovnik Airport', 'Dubrovnik Stradun', 'Banje Beach Dubrovnik', 'Dubrovnik Cable Car'] },
+    { date: 'Thu, Sep 10', title: 'Dubrovnik (full day)', tasks: [
+        'Walk the Old Town & City Walls',
+        'Explore Rector\'s Palace & Franciscan Monastery',
+        'Cable car up to Mt. Srđ for panoramic views',
+        'Optional boat trip to Lokrum Island',
+        'Sunset drink at Buža Bar'
+      ], maps: ['Dubrovnik City Walls', "Rector's Palace Dubrovnik", 'Dubrovnik Cable Car', 'Buža Bar Dubrovnik'] },
+    { date: 'Fri, Sep 11', title: 'Dubrovnik → Split', tasks: [
+        'Check out and drive to Split (~4 hrs — under 5hr limit)',
+        'Check into hotel',
+        'Evening: Diocletian\'s Palace & Riva promenade'
+      ], maps: ["Diocletian's Palace Split"] },
+    { date: 'Sat, Sep 12', title: 'Split (full day)', tasks: [
+        'Explore Diocletian\'s Palace in depth',
+        'Climb St. Domnius Cathedral bell tower',
+        'Hike Marjan Hill for the viewpoint',
+        'Beach time at Bačvice',
+        'Dinner along the Riva'
+      ], maps: ['Cathedral of St Domnius Split', 'Marjan Hill Split', 'Bačvice Beach Split'] },
+    { date: 'Sun, Sep 13', title: 'Split → Zadar', tasks: [
+        'Optional detour: Krka National Park waterfalls',
+        'Drive to Zadar (~2-2.5 hrs — under 5hr limit)',
+        'Check into hotel',
+        'Zadar Old Town: Roman Forum & St. Donatus Church',
+        'Sunset at the Sea Organ & Greeting to the Sun',
+        'Dinner in Zadar Old Town'
+      ], maps: ['Krka National Park', "St. Donatus Church Zadar", 'Sea Organ Zadar'] },
+    { date: 'Mon, Sep 14', title: 'Zadar → Plitvice Lakes National Park', tasks: [
+        'Drive to Plitvice Lakes (~1.5-2 hrs — under 5hr limit)',
+        'Check into hotel',
+        'Afternoon walk of the Lower & Upper Lakes',
+        'Boat ride across Kozjak Lake',
+        'Catch sunset at a viewpoint'
+      ], maps: ['Plitvice Lakes National Park Entrance 1', 'Plitvice Lakes Upper Lakes'] },
+    { date: 'Tue, Sep 15', title: 'Plitvice → Zagreb', tasks: [
+        'Check out and drive to Zagreb (~2 hrs — under 5hr limit)',
+        'Arrive early — plenty of buffer time',
+        'Relax, last-minute shopping or a final stroll in Zagreb'
+      ], maps: ['Zagreb Ban Jelačić Square'] },
+    { date: 'Tue night / Wed, Sep 15–16', title: 'Departure from Zagreb', tasks: [
+        'Drop off the rental car in Zagreb',
+        'Head to Zagreb Airport (Franjo Tuđman) with buffer time',
+        'Check in for LY5182 — boarding for 00:30 departure',
+        'Land in Tel Aviv 04:40'
+      ], maps: ['Zagreb Franjo Tuđman Airport'] }
+  ];
+
+  const itinDaysEl = document.getElementById('itinerary-days');
+  const itinState = loadState('croatia_itin_tasks');
+
+  itinerary.forEach((day, dIdx) => {
+    const card = document.createElement('div');
+    card.className = 'day-card';
+    const taskItems = day.tasks.map((t, tIdx) => {
+      const id = `d${dIdx}-t${tIdx}`;
+      const checked = !!itinState[id];
+      return `<li class="${checked ? 'checked' : ''}">
+        <input type="checkbox" data-id="${id}" ${checked ? 'checked' : ''}>
+        <span class="txt">${t}</span>
+      </li>`;
+    }).join('');
+    const mapItems = (day.maps || []).map(m => `<a href="${mapLink(m + ', Croatia')}" target="_blank" rel="noopener">📍 ${m}</a>`).join('');
+    card.innerHTML = `
+      <div class="day-head">
+        <h3>Day ${dIdx + 1}: ${day.title}</h3>
+        <span class="date">${day.date}</span>
+      </div>
+      <ul class="task-list">${taskItems}</ul>
+      <div class="map-links">${mapItems}</div>
+    `;
+    itinDaysEl.appendChild(card);
+  });
+
+  function updateItinProgress() {
+    const boxes = document.querySelectorAll('#itinerary-days input[type=checkbox]');
+    const total = boxes.length;
+    const done = document.querySelectorAll('#itinerary-days input[type=checkbox]:checked').length;
+    document.getElementById('itin-progress-text').textContent = `${done} / ${total}`;
+    document.getElementById('itin-progress-bar').style.width = total ? `${(done/total)*100}%` : '0%';
+  }
+
+  itinDaysEl.addEventListener('change', (e) => {
+    if (e.target.matches('input[type=checkbox]')) {
+      const id = e.target.dataset.id;
+      itinState[id] = e.target.checked;
+      saveState('croatia_itin_tasks', itinState);
+      e.target.closest('li').classList.toggle('checked', e.target.checked);
+      updateItinProgress();
+    }
+  });
+  updateItinProgress();
+
+  // ---------- Map ----------
+  const routeStops = [
+    { n: '1', city: 'Zagreb', dates: 'Sep 8 → Sep 9', query: 'Zagreb, Croatia' },
+    { n: '✈️', city: 'Dubrovnik', dates: 'Sep 9 → Sep 11', query: 'Dubrovnik, Croatia' },
+    { n: '2', city: 'Split', dates: 'Sep 11 → Sep 13', query: 'Split, Croatia' },
+    { n: '3', city: 'Zadar', dates: 'Sep 13 → Sep 14', query: 'Zadar, Croatia' },
+    { n: '4', city: 'Plitvice Lakes', dates: 'Sep 14 → Sep 15', query: 'Plitvice Lakes National Park, Croatia' },
+    { n: '5', city: 'Zagreb', dates: 'Sep 15 → flight home', query: 'Zagreb, Croatia' }
+  ];
+
+  // Driving leg only: Dubrovnik → Split → Zadar → Plitvice → Zagreb (the Zagreb→Dubrovnik leg is a flight)
+  const drivingStops = routeStops.slice(1).map(s => s.query);
+  const origin = encodeURIComponent(drivingStops[0]);
+  const waypoints = drivingStops.slice(1).map(encodeURIComponent).join('+to:');
+  document.getElementById('route-map-frame').src =
+    `https://www.google.com/maps?saddr=${origin}&daddr=${waypoints}&output=embed`;
+
+  document.getElementById('map-stops').innerHTML = routeStops.map(s => `
+    <a class="map-stop" href="${mapLink(s.query)}" target="_blank" rel="noopener">
+      <div class="n">Stop ${s.n}</div>
+      <div class="city">${s.city}</div>
+      <div class="dates">${s.dates}</div>
+    </a>
+  `).join('');
+
+  // ---------- Hotels ----------
+  const hotelStays = [
+    { city: 'Zagreb', dates: 'Tue Sep 8 → Wed Sep 9 (1 night) — BOOKED', near: 'Ban Jelačić Square, Upper Town/St. Mark\'s, Dolac Market, Tkalčićeva Street',
+      options: [
+        { name: '✅ Best Western Airport Hotel Stella', area: 'Maslenička 1, Zagreb', price: '€231.16 total (2 rooms, 1 night)', why: 'Confirmation #5389.123.261, PIN 9263 — Comfort Twin + Comfort Triple, breakfast included, free parking, check-in from 15:00 (noted late arrival ~01:00-02:00)', link: '' }
+      ] },
+    { city: 'Dubrovnik', dates: 'Wed Sep 9 → Fri Sep 11 (2 nights)', near: 'Dubrovnik Old Town, City Walls, Buža Bar, Old Harbor, Mt. Srđ cable car',
+      options: [
+        { name: 'City Hotel Dubrovnik', area: 'Near Bellevue Beach', price: '~€190-200/night', why: '11-min walk to Old Town', link: 'https://www.booking.com/hotel/hr/city-dubrovnik.html' },
+        { name: 'Palacio Celeste', area: 'Old Town', price: '~€280-290/night', why: 'Best walkability to Walls', link: 'https://www.booking.com/hotel/hr/palacio-celeste.html' },
+        { name: 'SUNce Palace Apartments', area: '~330ft from Walls', price: '~€290-300/night', why: 'Extremely central', link: 'https://www.booking.com/hotel/hr/sunce-palace-apartments.html' },
+        { name: 'Boutique Hotel Porto', area: 'Near Bellevue Beach', price: '~€275-285/night', why: 'Private parking, sea-adjacent', link: 'https://www.booking.com/hotel/hr/porto-dubrovnik.html' }
+      ] },
+    { city: 'Split', dates: 'Fri Sep 11 → Sun Sep 13 (2 nights)', near: 'Diocletian\'s Palace, Riva promenade, Marjan Hill, Bačvice Beach',
+      options: [
+        { name: 'Marvie Hotel & Health', area: '~0.9mi from Palace', price: '~€140-150/night', why: 'Rooftop pool, private parking', link: 'https://www.booking.com/hotel/hr/marvie.html' },
+        { name: 'Dioklecijan Hotel & Residence', area: 'Near Old Town', price: '~€110-120/night', why: 'Rooftop pool, wellness center', link: 'https://www.booking.com/hotel/hr/dioklecijan-residence.html' },
+        { name: 'Heritage Santa Lucia', area: 'Near center', price: '~€150-160/night', why: 'Private parking, 9.4/10 rated', link: 'https://www.booking.com/hotel/hr/heritage-santa-lucia.html' },
+        { name: 'AC Hotel by Marriott', area: 'Split', price: '~€115-125/night', why: 'Reliable chain, easy parking', link: 'https://www.booking.com/hotel/hr/ac-by-marriott-split.html' }
+      ] },
+    { city: 'Zadar', dates: 'Sun Sep 13 → Mon Sep 14 (1 night)', near: 'Sea Organ, Greeting to the Sun, Zadar Old Town, St. Donatus Church',
+      options: [
+        { name: 'Teatro Verdi Boutique', area: 'Old Town', price: '~€95-105/night', why: 'Directly in Old Town', link: 'https://www.booking.com/hotel/hr/teatro-verdi-boutique.html' },
+        { name: 'Art Hotel Kalelarga', area: 'Old Town', price: 'Verify directly', why: 'On the main promenade', link: 'https://www.booking.com/hotel/hr/art-kalelarga.html' },
+        { name: 'Miramare Hotel', area: 'Kolovare Beach', price: '~€185-195/night', why: 'Free parking, 2-min walk to beach', link: 'https://www.booking.com/hotel/hr/miramare-zadar.html' },
+        { name: 'Almayer Art & Heritage', area: 'Old Town', price: '~€220-230/night', why: 'Adults-only heritage property', link: 'https://www.booking.com/hotel/hr/almayer-art-heritage.html' }
+      ] },
+    { city: 'Plitvice Lakes area', dates: 'Mon Sep 14 → Tue Sep 15 (1 night)', near: 'Plitvice Lakes National Park Entrance 1/2',
+      options: [
+        { name: 'Hotel Jezero', area: 'At Entrance 2', price: '~€130-220/night (verify)', why: 'Run by the park itself, steps from entrance, free parking', link: 'https://np-plitvicka-jezera.hr/planirajte-posjet/hoteli-i-kampovi/hotel-jezero/' },
+        { name: 'Plitvice Miric Inn', area: 'Near park', price: 'Verify directly', why: '4.8/5, family-run, private parking', link: 'https://www.tripadvisor.com/Hotel_Review-g303827-d2249023-Reviews-Plitvice_Miric_Inn-Plitvice_Lakes_National_Park_Central_Croatia.html' },
+        { name: '16 Lakes Hotel', area: 'Grabovac', price: 'Verify directly', why: 'Near entrance, on-site restaurant/parking', link: 'https://www.tripadvisor.com/Hotel_Review-g644071-d2712236-Reviews-16_Lakes_Hotel-Grabovac_Plitvice_Lakes_National_Park_Central_Croatia.html' },
+        { name: 'Etno Garden Exclusive Rooms', area: 'Quieter entrance', price: 'Verify directly', why: '4.4/5, boutique feel', link: 'https://www.tripadvisor.com/Hotel_Review-g1190792-d1197604-Reviews-Etno_Garden_Exclusive_Rooms-Plitvica_Plitvice_Lakes_National_Park_Central_Croatia.html' }
+      ] }
+  ];
+
+  const hotelsDaysEl = document.getElementById('hotels-days');
+  const hotelChoice = loadState('croatia_hotel_choice');
+
+  hotelStays.forEach((stay, sIdx) => {
+    const card = document.createElement('div');
+    card.className = 'hotel-stay-card';
+    const rows = stay.options.map((opt, oIdx) => {
+      const id = `h${sIdx}-o${oIdx}`;
+      const checked = hotelChoice[`stay${sIdx}`] === id;
+      return `<tr class="${checked ? 'chosen' : ''}" data-row="${id}">
+        <td class="pick"><input type="radio" name="stay${sIdx}" data-stay="${sIdx}" data-id="${id}" ${checked ? 'checked' : ''}></td>
+        <td>${opt.name}</td>
+        <td>${opt.area}</td>
+        <td>${opt.price}</td>
+        <td>${opt.why}</td>
+        <td>${opt.link ? `<a href="${opt.link}" target="_blank" rel="noopener">View</a>` : ''}</td>
+      </tr>`;
+    }).join('');
+    card.innerHTML = `
+      <div class="day-head">
+        <h3>${stay.city}</h3>
+        <span class="date">${stay.dates}</span>
+      </div>
+      <p class="near">Near: ${stay.near}</p>
+      <table class="hotel-table">
+        <thead><tr><th></th><th>Hotel</th><th>Area</th><th>Price</th><th>Why it fits</th><th>Link</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    `;
+    hotelsDaysEl.appendChild(card);
+  });
+
+  function updateHotelProgress() {
+    const total = hotelStays.length;
+    const done = Object.keys(hotelChoice).filter(k => k.startsWith('stay')).length;
+    document.getElementById('hotel-progress-text').textContent = `${done} / ${total}`;
+    document.getElementById('hotel-progress-bar').style.width = total ? `${(done/total)*100}%` : '0%';
+  }
+
+  hotelsDaysEl.addEventListener('change', (e) => {
+    if (e.target.matches('input[type=radio]')) {
+      const stayIdx = e.target.dataset.stay;
+      const id = e.target.dataset.id;
+      hotelChoice[`stay${stayIdx}`] = id;
+      saveState('croatia_hotel_choice', hotelChoice);
+      const table = e.target.closest('table');
+      table.querySelectorAll('tr').forEach(r => r.classList.remove('chosen'));
+      e.target.closest('tr').classList.add('chosen');
+      updateHotelProgress();
+    }
+  });
+  updateHotelProgress();
+
+  // ---------- Packing ----------
+  const packingData = {
+    'Documents': ['Passport (valid 6+ months)', 'Flight tickets / boarding passes', 'Hotel & ferry confirmations', 'Travel insurance details', 'Driver\'s license / IDP for car rental', 'Credit/debit cards + some cash (EUR)'],
+    'Clothing': ['Swimsuits (x2)', 'Light summer clothes', 'Comfortable walking shoes', 'Sandals/flip-flops', 'Light layer/jacket for evenings', 'Sun hat & sunglasses'],
+    'Toiletries & Health': ['Sunscreen (high SPF)', 'After-sun lotion', 'Toiletry kit', 'Any personal medication', 'Basic first-aid items', 'Insect repellent'],
+    'Electronics': ['Phone + charger', 'EU plug adapter (type C/F)', 'Power bank', 'Camera', 'Headphones'],
+    'Beach/Boat Days': ['Beach towel', 'Waterproof phone pouch', 'Snorkel gear (optional)', 'Dry bag for boat trips', 'Water shoes for rocky beaches'],
+    'Misc': ['Reusable water bottle', 'Day backpack', 'Portable luggage scale', 'Copies of key documents (digital + paper)', 'Offline maps downloaded']
+  };
+
+  const packGrid = document.getElementById('pack-grid');
+  const packState = loadState('croatia_packing');
+  let packIdCounter = 0;
+
+  Object.entries(packingData).forEach(([cat, items]) => {
+    const catDiv = document.createElement('div');
+    catDiv.className = 'pack-cat';
+    const itemsHtml = items.map(item => {
+      const id = `pack-${packIdCounter++}`;
+      const checked = !!packState[id];
+      return `<li class="${checked ? 'checked' : ''}">
+        <input type="checkbox" data-id="${id}" ${checked ? 'checked' : ''}>
+        <span class="txt">${item}</span>
+      </li>`;
+    }).join('');
+    catDiv.innerHTML = `<h3>${cat}</h3><ul class="task-list">${itemsHtml}</ul>`;
+    packGrid.appendChild(catDiv);
+  });
+
+  function updatePackProgress() {
+    const boxes = document.querySelectorAll('#pack-grid input[type=checkbox]');
+    const total = boxes.length;
+    const done = document.querySelectorAll('#pack-grid input[type=checkbox]:checked').length;
+    document.getElementById('pack-progress-text').textContent = `${done} / ${total}`;
+    document.getElementById('pack-progress-bar').style.width = total ? `${(done/total)*100}%` : '0%';
+  }
+
+  packGrid.addEventListener('change', (e) => {
+    if (e.target.matches('input[type=checkbox]')) {
+      const id = e.target.dataset.id;
+      packState[id] = e.target.checked;
+      saveState('croatia_packing', packState);
+      e.target.closest('li').classList.toggle('checked', e.target.checked);
+      updatePackProgress();
+    }
+  });
+  updatePackProgress();
+
+  // ---------- Budget ----------
+  let expenses = loadState('croatia_budget_expenses');
+  if (Array.isArray(expenses) === false) expenses = [];
+  const budgetGoalInput = document.getElementById('budget-goal-input');
+  budgetGoalInput.value = localStorage.getItem('croatia_budget_goal') || '';
+
+  budgetGoalInput.addEventListener('input', () => {
+    localStorage.setItem('croatia_budget_goal', budgetGoalInput.value);
+    renderBudgetSummary();
+  });
+
+  function renderBudgetTable() {
+    const body = document.getElementById('budget-body');
+    body.innerHTML = expenses.map((e, i) => `
+      <tr>
+        <td>${e.desc}</td>
+        <td>${e.cat}</td>
+        <td>€${Number(e.amount).toFixed(2)}</td>
+        <td><button class="del-btn" data-idx="${i}">Remove</button></td>
+      </tr>
+    `).join('');
+  }
+
+  function renderBudgetSummary() {
+    const total = expenses.reduce((s, e) => s + Number(e.amount), 0);
+    const goal = Number(budgetGoalInput.value) || 0;
+    document.getElementById('sum-spent').textContent = `€${total.toFixed(2)}`;
+    document.getElementById('sum-remaining').textContent = goal ? `€${(goal - total).toFixed(2)}` : '—';
+    document.getElementById('sum-count').textContent = expenses.length;
+  }
+
+  document.getElementById('budget-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const desc = document.getElementById('exp-desc').value.trim();
+    const cat = document.getElementById('exp-cat').value;
+    const amount = parseFloat(document.getElementById('exp-amount').value);
+    if (!desc || isNaN(amount)) return;
+    expenses.push({ desc, cat, amount });
+    saveState('croatia_budget_expenses', expenses);
+    e.target.reset();
+    renderBudgetTable();
+    renderBudgetSummary();
+  });
+
+  document.getElementById('budget-body').addEventListener('click', (e) => {
+    if (e.target.matches('.del-btn')) {
+      const idx = Number(e.target.dataset.idx);
+      expenses.splice(idx, 1);
+      saveState('croatia_budget_expenses', expenses);
+      renderBudgetTable();
+      renderBudgetSummary();
+    }
+  });
+
+  renderBudgetTable();
+  renderBudgetSummary();
+
+  // ---------- Phrases ----------
+  const phrases = [
+    ['Hello', 'Bok / Dobar dan', 'bok / DOH-bar dahn'],
+    ['Good evening', 'Dobra večer', 'DOH-brah VEH-cher'],
+    ['Please', 'Molim', 'MOH-leem'],
+    ['Thank you', 'Hvala', 'HVAH-lah'],
+    ['Yes / No', 'Da / Ne', 'dah / neh'],
+    ['Excuse me / Sorry', 'Oprostite', 'oh-PROH-stee-teh'],
+    ['Do you speak English?', 'Govorite li engleski?', 'GOH-voh-ree-teh lee EN-gleh-skee'],
+    ['Where is...?', 'Gdje je...?', 'g-dyeh yeh'],
+    ['How much does it cost?', 'Koliko košta?', 'KOH-lee-koh KOSH-tah'],
+    ['The bill, please', 'Račun, molim', 'RAH-choon MOH-leem'],
+    ['Cheers!', 'Živjeli!', 'ZHEEV-yeh-lee'],
+    ['Water', 'Voda', 'VOH-dah'],
+    ['Beer / Wine', 'Pivo / Vino', 'PEE-voh / VEE-noh'],
+    ['Good / Great', 'Dobro / Odlično', 'DOH-broh / OHD-lich-noh'],
+    ['Goodbye', 'Doviđenja', 'doh-vee-JEH-nyah'],
+    ['Help!', 'Upomoć!', 'oo-POH-mohch']
+  ];
+  document.getElementById('phrase-body').innerHTML = phrases.map(([en, hr, pr]) =>
+    `<tr><td>${en}</td><td><strong>${hr}</strong></td><td>${pr}</td></tr>`
+  ).join('');
+
+  // ---------- Food ----------
+  const foodData = [
+    { city: 'Zagreb', items: ['Štrukli (baked cheese pastry)', 'Zagrebački odrezak (breaded veal/ham/cheese cutlet)', 'Purica s mlincima (turkey with pasta sheets)'], tip: 'Browse Dolac Market and grab lunch on Tkalčićeva Street.' },
+    { city: 'Plitvice area', items: ['Fresh trout', 'Local cheese & smoked meats (pršut)', 'Homemade štrukli'], tip: 'Small konobas near the park entrances serve hearty mountain fare.' },
+    { city: 'Zadar', items: ['Fritule (fried dough balls)', 'Maraschino liqueur', 'Fresh grilled seafood'], tip: 'Watch sunset at the Sea Organ, then dine in the old town.' },
+    { city: 'Split / Dalmatia', items: ['Crni rižot (black cuttlefish risotto)', 'Pašticada (braised beef stew)', 'Soparnik (savory chard pie)', 'Peka (meat/seafood slow-cooked under a bell)'], tip: 'Order peka a few hours ahead — it\'s cooked to order.' },
+    { city: 'Hvar', items: ['Fresh seafood platters', 'Gregada (fish stew)', 'Plavac Mali red wine'], tip: 'Try a konoba just outside the main square for better value.' },
+    { city: 'Dubrovnik', items: ['Rozata (custard dessert)', 'Black risotto', 'Fresh oysters (day trip to Ston is famous for them)'], tip: 'Buža Bar for a cliffside sunset drink is a must.' }
+  ];
+  document.getElementById('food-grid').innerHTML = foodData.map(f => `
+    <div class="food-card">
+      <h3>${f.city}</h3>
+      <ul>${f.items.map(i => `<li>${i}</li>`).join('')}</ul>
+      <p class="try"><em>${f.tip}</em></p>
+    </div>
+  `).join('');
+</script>
+
+</body>
+</html>
