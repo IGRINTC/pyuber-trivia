@@ -179,6 +179,43 @@
   }
   .map-links a:hover { background: var(--accent2); color: #04202a; }
 
+  /* Map */
+  .map-embed-wrap {
+    position: relative;
+    width: 100%;
+    padding-bottom: 65%;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: var(--card);
+  }
+  .map-embed-wrap iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+  .map-stops {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+    margin-top: 16px;
+  }
+  .map-stop {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    text-decoration: none;
+    color: var(--text);
+    display: block;
+  }
+  .map-stop:hover { border-color: var(--accent2); }
+  .map-stop .n { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .map-stop .city { font-weight: 600; color: var(--gold); margin: 2px 0; }
+  .map-stop .dates { font-size: 0.8rem; color: var(--muted); }
+
   /* Hotels */
   .hotel-stay-card {
     background: var(--card);
@@ -340,6 +377,7 @@
 <nav class="tabs">
   <button data-panel="overview" class="active">Overview</button>
   <button data-panel="itinerary">Itinerary</button>
+  <button data-panel="map">Map</button>
   <button data-panel="hotels">Hotels</button>
   <button data-panel="packing">Packing</button>
   <button data-panel="budget">Budget</button>
@@ -379,13 +417,13 @@
         <p>Igal Benjamin (11E / 17F)</p>
         <p>Hadar (12F / 17E)</p>
         <p>Neta (12D / 17B) · Maya (12E / 17A)</p>
+        <p style="color:#9fb3d1">2 adults (Igal, Hadar) + 3 kids (8, 10, 15) — per Zagreb hotel booking</p>
       </div>
       <div class="info-card">
         <h3>✈️ Domestic Flight — OU6660</h3>
         <p>Croatia Airlines, Zagreb (ZAG) → Dubrovnik (DBV)</p>
         <p>Dep 11:55 → Arr 12:50, Wed Sep 9 (55min)</p>
         <p>Checked bags: Igal & Hadar 1×23kg each; Yael/Maya/Neta hand baggage only (8kg)</p>
-        <p style="color:#f4b942">⚠️ Ticket lists Yael as a Child — her international ticket has her as an Adult, worth double-checking before check-in</p>
       </div>
       <div class="info-card">
         <h3>📅 Duration</h3>
@@ -421,6 +459,16 @@
     <div class="progress-label">Trip progress: <span id="itin-progress-text">0 / 0</span> tasks done</div>
     <div class="progress-wrap"><div class="progress-bar" id="itin-progress-bar"></div></div>
     <div id="itinerary-days"></div>
+  </section>
+
+  <!-- MAP -->
+  <section id="map" class="panel">
+    <h2 class="section-title">Trip Map</h2>
+    <p class="note" style="margin-top:0">✈️ Zagreb → Dubrovnik is a flight (not shown as a driving route below). The map covers the driving leg: Dubrovnik → Split → Zadar → Plitvice → Zagreb.</p>
+    <div class="map-embed-wrap">
+      <iframe id="route-map-frame" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
+    <div class="map-stops" id="map-stops"></div>
   </section>
 
   <!-- HOTELS -->
@@ -544,10 +592,14 @@
         'Morning in Zagreb — pack up and check out',
         'Head to Zagreb Airport with buffer time before the 11:55 departure',
         'Flight OU6660 (Croatia Airlines): Zagreb → Dubrovnik, 11:55 → 12:50',
-        '⚠️ Double-check Yael\'s ticket status at check-in (listed as Child on this ticket, Adult on the international ticket)',
         'Pick up one-way rental car in Dubrovnik (drop-off in Zagreb)',
-        'Check into hotel — afternoon free for sightseeing'
-      ], maps: ['Zagreb Franjo Tuđman Airport', 'Dubrovnik Airport'] },
+        'Check into hotel — afternoon free, pick from the options below',
+        'Option: Casual stroll down Stradun & through the Pile Gate',
+        'Option: Relax at Banje Beach (closest beach to Old Town)',
+        'Option: Kayak tour along the Old Town city walls',
+        'Option: Cable car up to Mt. Srđ for sunset views (save Walls/Rector\'s Palace for tomorrow)',
+        'Option: Early dinner at a konoba in the Old Town'
+      ], maps: ['Zagreb Franjo Tuđman Airport', 'Dubrovnik Airport', 'Dubrovnik Stradun', 'Banje Beach Dubrovnik', 'Dubrovnik Cable Car'] },
     { date: 'Thu, Sep 10', title: 'Dubrovnik (full day)', tasks: [
         'Walk the Old Town & City Walls',
         'Explore Rector\'s Palace & Franciscan Monastery',
@@ -640,14 +692,36 @@
   });
   updateItinProgress();
 
+  // ---------- Map ----------
+  const routeStops = [
+    { n: '1', city: 'Zagreb', dates: 'Sep 8 → Sep 9', query: 'Zagreb, Croatia' },
+    { n: '✈️', city: 'Dubrovnik', dates: 'Sep 9 → Sep 11', query: 'Dubrovnik, Croatia' },
+    { n: '2', city: 'Split', dates: 'Sep 11 → Sep 13', query: 'Split, Croatia' },
+    { n: '3', city: 'Zadar', dates: 'Sep 13 → Sep 14', query: 'Zadar, Croatia' },
+    { n: '4', city: 'Plitvice Lakes', dates: 'Sep 14 → Sep 15', query: 'Plitvice Lakes National Park, Croatia' },
+    { n: '5', city: 'Zagreb', dates: 'Sep 15 → flight home', query: 'Zagreb, Croatia' }
+  ];
+
+  // Driving leg only: Dubrovnik → Split → Zadar → Plitvice → Zagreb (the Zagreb→Dubrovnik leg is a flight)
+  const drivingStops = routeStops.slice(1).map(s => s.query);
+  const origin = encodeURIComponent(drivingStops[0]);
+  const waypoints = drivingStops.slice(1).map(encodeURIComponent).join('+to:');
+  document.getElementById('route-map-frame').src =
+    `https://www.google.com/maps?saddr=${origin}&daddr=${waypoints}&output=embed`;
+
+  document.getElementById('map-stops').innerHTML = routeStops.map(s => `
+    <a class="map-stop" href="${mapLink(s.query)}" target="_blank" rel="noopener">
+      <div class="n">Stop ${s.n}</div>
+      <div class="city">${s.city}</div>
+      <div class="dates">${s.dates}</div>
+    </a>
+  `).join('');
+
   // ---------- Hotels ----------
   const hotelStays = [
-    { city: 'Zagreb', dates: 'Tue Sep 8 → Wed Sep 9 (1 night)', near: 'Ban Jelačić Square, Upper Town/St. Mark\'s, Dolac Market, Tkalčićeva Street',
+    { city: 'Zagreb', dates: 'Tue Sep 8 → Wed Sep 9 (1 night) — BOOKED', near: 'Ban Jelačić Square, Upper Town/St. Mark\'s, Dolac Market, Tkalčićeva Street',
       options: [
-        { name: 'Hotel Capital', area: 'Lower Town', price: '~€125-135/night', why: '4-min walk to Ban Jelačić Square', link: 'https://www.booking.com/hotel/hr/amadria-park-capital.html' },
-        { name: 'Best Western Premier Astoria', area: 'Lower Town', price: '~€140-150/night', why: 'Free private parking, near Main Station', link: 'https://www.booking.com/hotel/hr/astoria.html' },
-        { name: 'Hotel PARK 45', area: 'Lower Town', price: '~€120-130/night', why: 'Secure parking, tram access', link: 'https://www.booking.com/hotel/hr/park-45.html' },
-        { name: 'MANDA Heritage Hotel', area: 'Lower Town', price: '~€105-115/night', why: 'Close to Cathedral/Dolac Market', link: 'https://www.booking.com/hotel/hr/manda-heritage.html' }
+        { name: '✅ Best Western Airport Hotel Stella', area: 'Maslenička 1, Zagreb', price: '€231.16 total (2 rooms, 1 night)', why: 'Confirmation #5389.123.261, PIN 9263 — Comfort Twin + Comfort Triple, breakfast included, free parking, check-in from 15:00 (noted late arrival ~01:00-02:00)', link: '' }
       ] },
     { city: 'Dubrovnik', dates: 'Wed Sep 9 → Fri Sep 11 (2 nights)', near: 'Dubrovnik Old Town, City Walls, Buža Bar, Old Harbor, Mt. Srđ cable car',
       options: [
