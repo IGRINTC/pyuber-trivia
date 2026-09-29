@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prague 2026 trip</title>
+<style>
+  :root {
+    --bg: #1a120d;
+    --bg2: #2a1a12;
+    --card: #2e2016;
+    --card-alt: #3a291c;
+    --accent: #c0392b;
+    --accent2: #2e86ab;
+    --gold: #d4a24c;
+    --text: #f5ecdf;
+    --muted: #b9a68f;
+    --border: rgba(255,255,255,0.1);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: linear-gradient(160deg, var(--bg), var(--bg2) 60%, #1c130d);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--text);
+  }
+  header { padding: 28px 20px 18px; text-align: center; position: relative; overflow: hidden; }
+  header::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(45deg, rgba(212,162,76,0.08) 0 10px, transparent 10px 20px);
+    pointer-events: none;
+  }
+  h1 { margin: 0 0 6px; font-size: 2rem; letter-spacing: 0.5px; }
+  header p.sub { margin: 0; color: var(--muted); font-size: 1rem; }
+  #countdown { display: flex; justify-content: center; gap: 14px; margin-top: 18px; flex-wrap: wrap; }
+  .cd-box { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 10px 16px; min-width: 70px; }
+  .cd-box .num { font-size: 1.6rem; font-weight: 700; color: var(--gold); }
+  .cd-box .label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+
+  nav.tabs { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; padding: 10px 16px 0; max-width: 1100px; margin: 0 auto; }
+  nav.tabs button {
+    background: var(--card); border: 1px solid var(--border); color: var(--text);
+    padding: 10px 18px; border-radius: 999px; cursor: pointer; font-size: 0.95rem;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  nav.tabs button:hover { border-color: var(--accent2); }
+  nav.tabs button.active { background: var(--accent); border-color: var(--accent); font-weight: 600; }
+
+  main { max-width: 1100px; margin: 0 auto; padding: 20px 16px 60px; }
+  .panel { display: none; animation: fade 0.25s ease; }
+  .panel.active { display: block; }
+  @keyframes fade { from { opacity: 0; transform: translateY(4px);} to {opacity:1; transform:translateY(0);} }
+
+  h2.section-title { color: var(--gold); border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-top: 0; }
+
+  .route-strip { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 16px 0; }
+  .route-chip { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; font-size: 0.9rem; }
+
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; margin-top: 14px; }
+  .card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 16px; display: flex; flex-direction: column; gap: 8px;
+  }
+  .card.best { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold) inset; }
+  .card h3 { margin: 0; font-size: 1.05rem; }
+  .stars { color: var(--gold); letter-spacing: 2px; }
+  .price { font-size: 1.4rem; font-weight: 700; color: var(--gold); }
+  .price .unit { font-size: 0.75rem; color: var(--muted); font-weight: 400; }
+  .tag { display: inline-block; background: var(--card-alt); border: 1px solid var(--border); border-radius: 999px; padding: 3px 10px; font-size: 0.72rem; color: var(--muted); margin-right: 6px; }
+  .badge { background: var(--accent); color: #fff; border-radius: 999px; padding: 2px 10px; font-size: 0.7rem; font-weight: 600; align-self: flex-start; }
+  .muted { color: var(--muted); font-size: 0.85rem; }
+  a.book-link { color: var(--gold); text-decoration: none; font-size: 0.85rem; }
+  a.book-link:hover { text-decoration: underline; }
+
+  table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 0.9rem; }
+  th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--border); }
+  th { color: var(--muted); text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.5px; }
+  tr.best td:first-child { border-left: 3px solid var(--gold); }
+  .note { background: var(--card-alt); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; font-size: 0.85rem; color: var(--muted); margin-top: 16px; }
+  footer { text-align: center; color: var(--muted); font-size: 0.8rem; padding: 20px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🏰 Prague, November 2026</h1>
+  <p class="sub">Nov 19 (night) &ndash; Nov 23, 2026 &middot; 2 travelers &middot; from Tel Aviv (TLV)</p>
+  <div id="countdown">
+    <div class="cd-box"><div class="num" id="cd-days">-</div><div class="label">Days</div></div>
+    <div class="cd-box"><div class="num" id="cd-hours">-</div><div class="label">Hours</div></div>
+    <div class="cd-box"><div class="num" id="cd-mins">-</div><div class="label">Mins</div></div>
+  </div>
+</header>
+
+<nav class="tabs">
+  <button class="tab-btn active" data-tab="overview">Overview</button>
+  <button class="tab-btn" data-tab="flights">Flights</button>
+  <button class="tab-btn" data-tab="hotels">Hotels</button>
+</nav>
+
+<main>
+
+  <!-- OVERVIEW -->
+  <section id="overview" class="panel active">
+    <h2 class="section-title">Trip overview</h2>
+    <div class="route-strip">
+      <div class="route-chip">✈️ TLV → PRG</div>
+      <div class="route-chip">🌙 Check-in: Thu, Nov 19</div>
+      <div class="route-chip">🧳 Check-out: Mon, Nov 23</div>
+      <div class="route-chip">🛏️ 4 nights</div>
+      <div class="route-chip">⭐ Hotels 4★ and above only</div>
+    </div>
+    <p class="muted">Dashboard built from a live Google Flights / Google Hotels search for the exact Nov 19&ndash;23, 2026 dates.
+    Prices are point-in-time snapshots (ILS, round trip for flights / per night for hotels) &mdash; re-check before booking, they move daily.</p>
+    <div class="note">
+      Quick pick: nonstop <strong>Smartwings</strong> flight (₪1,378 RT/person) + <strong>Century Old Town Prague – MGallery</strong>
+      or <strong>NH Collection Prague Carlo IV</strong> for a 4★+ Old Town stay within walking distance of everything.
+    </div>
+  </section>
+
+  <!-- FLIGHTS -->
+  <section id="flights" class="panel">
+    <h2 class="section-title">Flight options — TLV → PRG → TLV</h2>
+    <p class="muted">Outbound Thu Nov 19, return Mon Nov 23. Prices are round-trip, per person, in ILS (₪).</p>
+    <table>
+      <thead>
+        <tr><th>Airline</th><th>Type</th><th>Outbound (Nov 19)</th><th>Duration</th><th>Price (RT)</th></tr>
+      </thead>
+      <tbody>
+        <tr class="best">
+          <td>Smartwings</td><td>Nonstop</td><td>05:35 TLV → 08:45 PRG</td><td>4h 10m</td><td>₪1,378</td>
+        </tr>
+        <tr>
+          <td>El Al</td><td>Nonstop</td><td>17:35 TLV → 20:50 PRG</td><td>4h 15m</td><td>₪1,438</td>
+        </tr>
+        <tr>
+          <td>El Al</td><td>Nonstop</td><td>07:25 TLV → 10:35 PRG</td><td>4h 10m</td><td>₪1,622</td>
+        </tr>
+        <tr>
+          <td>Israir Airlines</td><td>Nonstop</td><td>06:10 TLV → 09:15 PRG</td><td>4h 05m</td><td>₪1,643</td>
+        </tr>
+        <tr>
+          <td>Arkia</td><td>Nonstop</td><td>10:00 TLV → 13:00 PRG</td><td>4h 00m</td><td>Price unavailable</td>
+        </tr>
+        <tr>
+          <td>LOT</td><td>1 stop · Warsaw</td><td>10:45 TLV → 17:15 PRG</td><td>7h 30m</td><td>₪1,072</td>
+        </tr>
+        <tr>
+          <td>Aegean</td><td>1 stop · Athens</td><td>12:20 TLV → 18:55 PRG</td><td>7h 35m</td><td>₪1,084</td>
+        </tr>
+        <tr>
+          <td>LOT</td><td>1 stop · Warsaw</td><td>05:20 TLV → 12:10 PRG</td><td>7h 50m</td><td>₪1,143</td>
+        </tr>
+        <tr>
+          <td>Lufthansa</td><td>1 stop · Munich</td><td>07:00 TLV → 13:05 PRG</td><td>7h 05m</td><td>₪1,262</td>
+        </tr>
+        <tr>
+          <td>SWISS</td><td>1 stop · Zurich (overnight layover)</td><td>18:00 TLV → 08:50+1 PRG</td><td>15h 50m</td><td>₪995 (cheapest overall)</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="note">
+      <strong>Recommendation:</strong> Smartwings or El Al nonstop are the best balance of price/convenience for a short 4-night trip
+      (~4h flight, no layover risk). SWISS via Zurich is cheapest on paper but has a 10h overnight layover — only worth it if you don't
+      mind losing half a travel day. Book directly with the airline or a search meta-engine (Google Flights / Kayak) to confirm live seat availability.
+    </div>
+  </section>
+
+  <!-- HOTELS -->
+  <section id="hotels" class="panel">
+    <h2 class="section-title">Hotels — 4★ and above, Prague Old Town</h2>
+    <p class="muted">Curated from live Prague Old Town hotel results, filtered to 4★ and 5★ only. Starting prices shown are per night (ILS) — confirm exact Nov 19–23 total before booking.</p>
+    <div class="card-grid">
+
+      <div class="card best">
+        <span class="badge">Best value 4★</span>
+        <h3>Century Old Town Prague – MGallery</h3>
+        <div class="stars">★★★★</div>
+        <div class="price">from ₪841 <span class="unit">/ night</span></div>
+        <div><span class="tag">Free cancellation</span><span class="tag">Pet-friendly</span><span class="tag">4.6★ (2,562 reviews)</span></div>
+        <p class="muted">Boutique Accor property right in Old Town, near Old Town Square.</p>
+      </div>
+
+      <div class="card best">
+        <span class="badge">5★ pick</span>
+        <h3>NH Collection Prague Carlo IV</h3>
+        <div class="stars">★★★★★</div>
+        <div class="price">from ₪1,259 <span class="unit">/ night</span></div>
+        <div><span class="tag">Free cancellation</span><span class="tag">Hot tub / Spa</span><span class="tag">4.6★ (2,559 reviews)</span></div>
+        <p class="muted">Grand former palace hotel near the main train station, 10 min walk to Old Town.</p>
+      </div>
+
+      <div class="card">
+        <h3>Clarion Hotel Prague Old Town</h3>
+        <div class="stars">★★★★</div>
+        <div class="price">from ₪322 <span class="unit">/ night</span></div>
+        <div><span class="tag">Airport shuttle</span><span class="tag">Popular with Israeli guests</span></div>
+        <p class="muted">Solid mid-range 4★ in Old Town, good price/quality ratio.</p>
+      </div>
+
+      <div class="card">
+        <h3>K+K Hotel Central Prague</h3>
+        <div class="stars">★★★★</div>
+        <div class="price">from ₪334 <span class="unit">/ night</span></div>
+        <div><span class="tag">Great deal (-33%)</span><span class="tag">Fitness center</span></div>
+        <p class="muted">Modern 4★ close to Municipal House and Old Town.</p>
+      </div>
+
+      <div class="card">
+        <h3>Design Metropol Hotel Prague</h3>
+        <div class="stars">★★★★</div>
+        <div class="price">from ₪323 <span class="unit">/ night</span></div>
+        <div><span class="tag">Deal (-18%)</span><span class="tag">Airport shuttle</span></div>
+        <p class="muted">Contemporary design hotel a short walk from the Old Town core.</p>
+      </div>
+
+      <div class="card">
+        <h3>Grand Hotel Praha</h3>
+        <div class="stars">★★★★</div>
+        <div class="price">from ₪490 <span class="unit">/ night</span></div>
+        <div><span class="tag">Hot tub</span><span class="tag">Room service</span></div>
+        <p class="muted">Classic hotel directly on Old Town Square with Astronomical Clock views.</p>
+      </div>
+
+      <div class="card">
+        <span class="badge">Luxury splurge</span>
+        <h3>Grand Hotel Bohemia</h3>
+        <div class="stars">★★★★★</div>
+        <div class="price">from ₪666 <span class="unit">/ night</span></div>
+        <div><span class="tag">Great deal (-26%)</span><span class="tag">Room service</span></div>
+        <p class="muted">5★ Old Town institution just off náměstí Republiky, elegant classic rooms.</p>
+      </div>
+
+      <div class="card">
+        <span class="badge">Boutique luxury</span>
+        <h3>The Julius Prague</h3>
+        <div class="stars">★★★★★</div>
+        <div class="price">from ₪807 <span class="unit">/ night</span></div>
+        <div><span class="tag">Fitness center</span><span class="tag">Room service</span></div>
+        <p class="muted">Marriott Autograph Collection boutique property, top-rated for design and service.</p>
+      </div>
+
+      <div class="card">
+        <h3>Aurus Hotel Prague</h3>
+        <div class="stars">★★★★</div>
+        <div class="price">from ₪495 <span class="unit">/ night</span></div>
+        <div><span class="tag">Kitchen in some rooms</span><span class="tag">Airport shuttle</span></div>
+        <p class="muted">Quiet 4★ option with apartment-style rooms, still Old Town-adjacent.</p>
+      </div>
+
+    </div>
+    <div class="note">
+      <strong>Recommendation:</strong> for the best mix of location + value, <strong>Century Old Town Prague – MGallery</strong>
+      or <strong>Clarion Hotel Prague Old Town</strong> cover the 4★ bracket well. If you want to treat yourselves, <strong>Grand
+      Hotel Bohemia</strong> or <strong>The Julius Prague</strong> are the standout 5★ Old Town choices. All prices above are
+      single-night starting rates pulled live — search your exact Nov 19–23 dates on Booking.com/Google Hotels to get the real
+      4-night total and confirm availability before booking.
+    </div>
+  </section>
+
+</main>
+
+<footer>Prague trip dashboard · built for planning only, always re-verify prices &amp; availability before booking.</footer>
+
+<script>
+  // Tabs
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  // Countdown to Nov 19, 2026 (trip start)
+  const tripStart = new Date('2026-11-19T00:00:00');
+  function updateCountdown() {
+    const now = new Date();
+    let diff = tripStart - now;
+    if (diff < 0) diff = 0;
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    const mins = Math.floor((diff / (1000 * 60)) % 60);
+    document.getElementById('cd-days').textContent = days;
+    document.getElementById('cd-hours').textContent = hours;
+    document.getElementById('cd-mins').textContent = mins;
+  }
+  updateCountdown();
+  setInterval(updateCountdown, 60000);
+</script>
+
+</body>
+</html>
